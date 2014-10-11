@@ -21,6 +21,8 @@ localparam RegDst   = 6;
 localparam ALUOpLSB = 7;
 localparam ALUUpMSB = 8;
 
+localparam ID_EX_PC = 1;
+
 //** DEFINE REGISTERS **//
 reg [2:0] FLAG;		// Flag register
 
@@ -28,10 +30,14 @@ reg [8:0] CTRL_ID_EX;
 reg [4:0] CTRL_EX_MEM;
 reg [1:0] CTRL_MEM_WB;
 
-reg [x:0] DATA_IF_ID;
-reg [x:0] DATA_ID_EX;
-reg [x:0] DATA_EX_MEM;
-reg [x:0] DATA_MEM_WB;
+reg [15:0] DATA_IF_ID [1:0];
+reg [15:0] DATA_ID_EX [3:0];
+reg [15:0] DATA_EX_MEM [2:0];
+reg [15:0] DATA_MEM_WB [1:0];
+
+reg [2:0] REG_ID_EX [1:0];
+reg [2:0] REG_EX_MEM;
+reg [2:0] REG_MEM_WB;
 
 //** DEFINE WIRES **//
 wire [15:0] instr;
@@ -40,18 +46,24 @@ wire [8:0] ctrl_signals;
 //** DEFINE MODULES **//
 IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
 	     .addr(pc), 
-             rd_en,
+             rd_en,// TODO
 	     .instr(instr));	
 			
 DM  data_mem(.clk(clk),			// DATA MEMORY
-	     addr, re, we,
-	     wrt_data, rd_data);
+	     addr,// TODO
+	     .re(CTRL_EX_MEM[MemRead]), 
+             .we(CTRL_EX_MEM[MemWrite]),
+	     wrt_data,// TODO
+	     rd_data);// TODO
 
 rf  reg_file(.clk(clk), 		// REGISTER FILE
 	     .p0_addr(instr[7:4]), 
 	     .p1_addr(instr[3:0]), 
-	     p0, p1, re0, re1, 
-	     .dst_addr(11:8), dst, we, 
+	     p0, p1,// TODO 
+	     re0, re1,// TODO 
+	     .dst_addr(11:8), 
+	     dst,// TODO 
+	     .we(CTRL_MEM_WB[RegWrite]), 
 	     .hlt(hlt));
 
 Control ctrl(.instr(instr[15:12]),	// CONTROL BLOCK
@@ -82,16 +94,33 @@ end
 //** DATA PIPELINE **//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
+		DATA_IF_ID <= 0;
+		DATA_ID_EX <= 0;
+		DATA_EX_MEM <= 0;
+		DATA_MEM_WB <= 0;
 	end else begin
+		
 	end
 end
+
+module
+
+
+endmodule Control(instr, ctrl_signals);
+
+input [3:0] instr;
+output [8:0] ctrl_signals;
+
+
 
 endmodule
 
 
-module Control(instr, ctrl_signals);
+module aluControl(ALUOp, instr);
 
-input [3:0] instr;
-output [8:0] ctrl_signals;
+endmodule
+
+
+module alu(ctrl, op1, op2, result, flags);
 
 endmodule
