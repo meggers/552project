@@ -15,13 +15,28 @@ localparam RegWrite = 0;
 localparam MemToReg = 1;
 localparam MemWrite = 2;
 localparam MemRead  = 3;
-localparam Branch   = 4;
+localparam PCSrc    = 4;
 localparam ALUSrc   = 5;
 localparam RegDst   = 6;
 localparam ALUOpLSB = 7;
 localparam ALUUpMSB = 8;
 
-localparam ID_EX_PC = 1;
+localparam IF_ID_PC    = 0;
+localparam IF_ID_INST  = 1;
+
+localparam ID_EX_PC    = 0;
+localparam ID_EX_OP1   = 1;
+localparam ID_EX_OP2   = 2;
+localparam ID_EX_IMM   = 3;
+localparam ID_EX_R0    = 0;
+localparam ID_EX_R1    = 1;
+
+localparam EX_MEM_PC   = 0;
+localparam EX_MEM_RSLT = 1;
+localparam EX_MEM_OP2  = 2;
+
+localparam MEM_WB_RD   = 0;
+localparam MEM_WB_RSLT = 1;
 
 //** DEFINE REGISTERS **//
 reg [2:0] FLAG;		// Flag register
@@ -35,9 +50,9 @@ reg [15:0] DATA_ID_EX [3:0];
 reg [15:0] DATA_EX_MEM [2:0];
 reg [15:0] DATA_MEM_WB [1:0];
 
-reg [2:0] REG_ID_EX [1:0];
-reg [2:0] REG_EX_MEM;
-reg [2:0] REG_MEM_WB;
+reg [3:0] REG_ID_EX [1:0];
+reg [3:0] REG_EX_MEM;
+reg [3:0] REG_MEM_WB;
 
 //** DEFINE WIRES **//
 wire [15:0] instr;
@@ -50,18 +65,18 @@ IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
 	     .instr(instr));	
 			
 DM  data_mem(.clk(clk),			// DATA MEMORY
-	     addr,// TODO
+	     .addr(DATA_EX_MEM[EX_MEM_RSLT]),
 	     .re(CTRL_EX_MEM[MemRead]), 
              .we(CTRL_EX_MEM[MemWrite]),
-	     wrt_data,// TODO
+	     .wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
 	     rd_data);// TODO
 
 rf  reg_file(.clk(clk), 		// REGISTER FILE
-	     .p0_addr(instr[7:4]), 
-	     .p1_addr(instr[3:0]), 
-	     p0, p1,// TODO 
+	     .p0_addr(DATA_IF_ID[IF_ID_INST][11:8]), 
+	     .p1_addr(DATA_IF_ID[IF_ID_INST][7:4]), 
+	     p0, p1,// TODO
 	     re0, re1,// TODO 
-	     .dst_addr(11:8), 
+	     .dst_addr(REG_MEM_WB), 
 	     dst,// TODO 
 	     .we(CTRL_MEM_WB[RegWrite]), 
 	     .hlt(hlt));
@@ -74,7 +89,7 @@ always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		pc <= 0;
 	end else begin
-		pc <= pc + 4; // TODO: flesh this out
+		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_EM[EX_MEM_PC] : pc + 4;
 	end
 end
 
@@ -94,7 +109,7 @@ end
 //** DATA PIPELINE **//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
-		DATA_IF_ID <= 0;
+		DATA_IF_ID <= 0; // TODO: this doesn't work
 		DATA_ID_EX <= 0;
 		DATA_EX_MEM <= 0;
 		DATA_MEM_WB <= 0;
