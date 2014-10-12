@@ -55,8 +55,10 @@ reg [3:0] REG_EX_MEM;
 reg [3:0] REG_MEM_WB;
 
 //** DEFINE WIRES **//
+wire [15:0] pc_incr;
 wire [15:0] instr;
 wire [8:0] ctrl_signals;
+wire [15:0] read_1, read_2;
 
 //** DEFINE MODULES **//
 IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
@@ -74,22 +76,26 @@ DM  data_mem(.clk(clk),			// DATA MEMORY
 rf  reg_file(.clk(clk), 		// REGISTER FILE
 	     .p0_addr(DATA_IF_ID[IF_ID_INST][11:8]), 
 	     .p1_addr(DATA_IF_ID[IF_ID_INST][7:4]), 
-	     p0, p1,// TODO
+	     .p0(read_1), 
+	     .p1(read_2),
 	     re0, re1,// TODO 
 	     .dst_addr(REG_MEM_WB), 
 	     dst,// TODO 
 	     .we(CTRL_MEM_WB[RegWrite]), 
 	     .hlt(hlt));
 
-Control ctrl(.instr(instr[15:12]),	// CONTROL BLOCK
+Control ctrl(.instr(DATA_IF_ID[IF_ID_INST][15:12]),	// CONTROL BLOCK
 	     .ctrl_signals(ctrl_signals));
+
+//** CONTINUOUS ASSIGNS **//
+assign pc_incr = pc + 4;
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 0;
 	end else begin
-		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_EM[EX_MEM_PC] : pc + 4;
+		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_EM[EX_MEM_PC] : pc_incr;
 	end
 end
 
@@ -114,7 +120,24 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_EX_MEM <= 0;
 		DATA_MEM_WB <= 0;
 	end else begin
-		
+		DATA_IF_ID[IF_ID_PC] <= pc_incr;
+		DATA_IF_ID[IF_ID_INST] <= instr;
+
+		DATA_ID_EX[ID_EX_PC] <= DATA_IF_ID[IF_ID_PC]; // TODO: Race conditions?
+		DATA_ID_EX[ID_EX_OP1] <= read_1;
+		DATA_ID_EX[ID_EX_OP2] <= read_2;
+		DATA_ID_EX[ID_EX_IMM] <= ;
+		REG_ID_EX[ID_EX_R0] <= ;
+		REG_ID_EX[ID_EX_R1] <= ;
+
+		DATA_EX_MEM[EX_MEM_PC] <= ;
+		DATA_EX_MEM[EX_MEM_RSLT] <= ;
+		DATA_EX_MEM[EX_MEM_OP2] <= ;
+		REG_EX_MEM <= ;
+
+		DATA_MEM_WB[MEM_WB_RD] <= ;
+		DATA_MEM_WB[MEM_WB_RSLT] <= ;
+		REG_MEM_WB <= ;
 	end
 end
 
