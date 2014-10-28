@@ -63,7 +63,7 @@ wire [15:0] read_1, read_2;
 //** DEFINE MODULES **//
 IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
 	     .addr(pc), 
-             rd_en,// TODO
+             .rd_en(),// TODO
 	     .instr(instr));	
 			
 DM  data_mem(.clk(clk),			// DATA MEMORY
