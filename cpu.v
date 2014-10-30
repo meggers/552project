@@ -71,16 +71,16 @@ DM  data_mem(.clk(clk),			// DATA MEMORY
 	     .re(CTRL_EX_MEM[MemRead]), 
              .we(CTRL_EX_MEM[MemWrite]),
 	     .wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
-	     rd_data);// TODO
+	     .rd_data());// TODO
 
 rf  reg_file(.clk(clk), 		// REGISTER FILE
 	     .p0_addr(DATA_IF_ID[IF_ID_INST][11:8]), 
 	     .p1_addr(DATA_IF_ID[IF_ID_INST][7:4]), 
 	     .p0(read_1), 
 	     .p1(read_2),
-	     re0, re1,// TODO 
+	     .re0(), .re1(),// TODO 
 	     .dst_addr(REG_MEM_WB), 
-	     dst,// TODO 
+	     .dst(),// TODO 
 	     .we(CTRL_MEM_WB[RegWrite]), 
 	     .hlt(hlt));
 
@@ -148,8 +148,6 @@ endmodule Control(instr, ctrl_signals);
 
 input [3:0] instr;
 output [8:0] ctrl_signals;
-
-
 
 endmodule
 

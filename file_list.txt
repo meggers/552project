@@ -3,5 +3,5 @@ data_mem.v
 instr_mem.v
 rf_single_cycle.v
 alu.v
-alublocks/adder.c
+alublocks/adder.v
 alublocks/shifter.v
