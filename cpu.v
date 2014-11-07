@@ -27,7 +27,7 @@ localparam IF_ID_INST  = 1;
 localparam ID_EX_PC    = 0;
 localparam ID_EX_OP1   = 1;
 localparam ID_EX_OP2   = 2;
-localparam ID_EX_IMM   = 3;
+localparam ID_EX_INST  = 3;
 localparam ID_EX_R0    = 0;
 localparam ID_EX_R1    = 1;
 
@@ -59,6 +59,7 @@ wire [15:0] pc_incr;
 wire [15:0] instr;
 wire [8:0] ctrl_signals;
 wire [15:0] read_1, read_2;
+wire [15:0] dm_read;
 
 //** DEFINE MODULES **//
 IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
@@ -71,7 +72,7 @@ DM  data_mem(.clk(clk),			// DATA MEMORY
 	     .re(CTRL_EX_MEM[MemRead]), 
              .we(CTRL_EX_MEM[MemWrite]),
 	     .wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
-	     .rd_data());// TODO
+	     .rd_data(dm_read));// TODO
 
 rf  reg_file(.clk(clk), 		// REGISTER FILE
 	     .p0_addr(DATA_IF_ID[IF_ID_INST][11:8]), 
@@ -123,21 +124,20 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_IF_ID[IF_ID_PC] <= pc_incr;
 		DATA_IF_ID[IF_ID_INST] <= instr;
 
-		DATA_ID_EX[ID_EX_PC] <= DATA_IF_ID[IF_ID_PC]; // TODO: Race conditions?
+		DATA_ID_EX[ID_EX_PC] <= DATA_IF_ID[IF_ID_PC];
 		DATA_ID_EX[ID_EX_OP1] <= read_1;
-		DATA_ID_EX[ID_1EX_OP2] <= read_2;
-		DATA_ID_EX[ID_EX_IMM] <= ;
-		REG_ID_EX[ID_EX_R0] <= ;
-		REG_ID_EX[ID_EX_R1] <= ;
+		DATA_ID_EX[ID_EX_OP2] <= read_2;
+		DATA_ID_EX[ID_EX_INST] <= DATA_IF_ID[IF_ID_INST];
 
-		DATA_EX_MEM[EX_MEM_PC] <= ;
-		DATA_EX_MEM[EX_MEM_RSLT] <= ;
-		DATA_EX_MEM[EX_MEM_OP2] <= ;
-		REG_EX_MEM <= ;
+		DATA_EX_MEM[EX_MEM_PC] <= DATA_ID_EX[ID_EX_PC];
+		DATA_EX_MEM[EX_MEM_RSLT] <= result;
+		FLAG <= flags;
+		DATA_EX_MEM[EX_MEM_OP2] <= DATA_ID_EX[ID_EX_OP2];
+		REG_EX_MEM <= DATA_ID_EX[ID_EX_INST][11:8];
 
-		DATA_MEM_WB[MEM_WB_RD] <= ;
-		DATA_MEM_WB[MEM_WB_RSLT] <= ;
-		REG_MEM_WB <= ;
+		DATA_MEM_WB[MEM_WB_RD] <= dm_read;
+		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
+		REG_MEM_WB <= REG_EX_MEM;
 	end
 end
 
@@ -153,10 +153,5 @@ endmodule
 
 
 module aluControl(ALUOp, instr);
-
-endmodule
-
-
-module alu(ctrl, op1, op2, result, flags);
 
 endmodule
