@@ -1,4 +1,4 @@
-endmodule Control(instr, ctrl_signals, read_signals);
+module Control(instr, ctrl_signals, read_signals);
 
 // ADD 0000
 // PADDSB 0001
@@ -24,32 +24,63 @@ localparam MemRead  = 3;
 localparam PCSrc    = 4;
 localparam ALUSrc   = 5;
 localparam ALUop    = 6;
+localparam re0      = 0;
+localparam re1      = 1;
 
 input [3:0] instr;
-output [8:0] ctrl_signals;
-output [1:0] read_signals;
+output reg [8:0] ctrl_signals;
+output reg [1:0] read_signals;
 always@(*) begin
 
 if(instr == 4'b1001 || instr == 4'b1100 || instr == 4'b1110 || instr == 4'b1111) begin
-    ctr_signals[0] = 0;
-end else
-    ctr_signals[0] = 1;
+    ctrl_signals[RegWrite] = 0;
+end else begin
+    ctrl_signals[RegWrite] = 1;
 end
 
 if(instr == 4'b1000 || instr == 4'b1010 || instr == 4'b1011) begin
-    ctr_signals[1] = 1;
-end else
-    ctr_signals[1] = 0;
+    ctrl_signals[MemToReg] = 1;
+end else begin
+    ctrl_signals[MemToReg] = 0;
 end
 
 if(instr == 4'b1001) begin
-    ctr_signals[2] = 1;
-end else
-    ctr_signals[2] = 0;
+    ctrl_signals[MemWrite] = 1;
+end else begin
+    ctrl_signals[MemWrite] = 0;
 end
 
-if(instr == 4'b
-ctr_signals[8:6] = instr[2:0];
+if(instr == 4'b1000 || instr == 4'b1010 || instr == 4'b1011) begin
+    ctrl_signals[MemRead] = 1;
+end else begin
+    ctrl_signals[MemRead] = 0;
+end
+
+if(instr == 4'b1100 || instr == 4'b1101 || instr == 4'b1110 || instr == 4'b1111) begin
+    ctrl_signals[PCSrc] = 1;
+end else begin
+    ctrl_signals[PCSrc] = 0;
+end
+
+if(instr == 4'b1000 || instr == 4'b1001 || instr == 4'b1010 || instr == 4'b1011) begin
+    ctrl_signals[ALUSrc] = 1;
+end else begin
+    ctrl_signals[ALUSrc] = 0;
+end
+
+if(instr == 4'b1010 || instr == 4'b1011 || instr == 4'b1100 || instr == 4'b1101 || instr == 4'b1111) begin
+    read_signals[re0] = 0;
+end else begin
+    read_signals[re0] = 1;
+end
+
+if(instr == 4'b0000 || instr == 4'b0001 || instr == 4'b0010 || instr == 4'b0011 || instr == 4'b0100) begin
+    read_signals[re1] = 0;
+end else begin
+    read_signals[re1] = 1;
+end
+
+ctrl_signals[8:6] = instr[2:0];
 end
 endmodule
 
