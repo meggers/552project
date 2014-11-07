@@ -1,0 +1,227 @@
+#! /usr/local/iverilog/bin/vvp
+:ivl_version "0.9.7 " "(v0_9_7-13-gbf08fcd)";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0x7fb7c140be50 .scope module, "paddsb" "paddsb" 2 1;
+ .timescale 0 0;
+v0x7fb7c140bf30_0 .var "dest", 15 0;
+v0x7fb7c141bf20_0 .var "high_out", 7 0;
+v0x7fb7c141bfb0_0 .var "high_sum", 7 0;
+v0x7fb7c141c050_0 .var "low_out", 7 0;
+v0x7fb7c141c0e0_0 .var "low_sum", 7 0;
+v0x7fb7c141c1a0_0 .net "src1", 15 0, C4<zzzzzzzzzzzzzzzz>; 0 drivers
+v0x7fb7c141c230_0 .net "src2", 15 0, C4<zzzzzzzzzzzzzzzz>; 0 drivers
+E_0x7fb7c1405e80 .event edge, v0x7fb7c141bf20_0, v0x7fb7c141c050_0;
+E_0x7fb7c1405da0 .event edge, v0x7fb7c141c1a0_0, v0x7fb7c141c230_0, v0x7fb7c141bfb0_0;
+E_0x7fb7c1405f60 .event edge, v0x7fb7c141c1a0_0, v0x7fb7c141c230_0, v0x7fb7c141c0e0_0;
+E_0x7fb7c1405ca0 .event edge, v0x7fb7c141c1a0_0, v0x7fb7c141c230_0;
+    .scope S_0x7fb7c140be50;
+T_0 ;
+    %wait E_0x7fb7c1405ca0;
+    %load/v 8, v0x7fb7c141c1a0_0, 8; Only need 8 of 16 bits
+; Save base=8 wid=8 in lookaside.
+    %load/v 16, v0x7fb7c141c230_0, 8; Only need 8 of 16 bits
+; Save base=16 wid=8 in lookaside.
+    %add 8, 16, 8;
+    %set/v v0x7fb7c141c0e0_0, 8, 8;
+    %ix/load 1, 8, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_0.0, 4;
+    %load/x1p 8, v0x7fb7c141c1a0_0, 8;
+    %jmp T_0.1;
+T_0.0 ;
+    %mov 8, 2, 8;
+T_0.1 ;
+; Save base=8 wid=8 in lookaside.
+    %ix/load 1, 8, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_0.2, 4;
+    %load/x1p 16, v0x7fb7c141c230_0, 8;
+    %jmp T_0.3;
+T_0.2 ;
+    %mov 16, 2, 8;
+T_0.3 ;
+; Save base=16 wid=8 in lookaside.
+    %add 8, 16, 8;
+    %set/v v0x7fb7c141bfb0_0, 8, 8;
+    %jmp T_0;
+    .thread T_0, $push;
+    .scope S_0x7fb7c140be50;
+T_1 ;
+    %wait E_0x7fb7c1405f60;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.0, 4;
+    %load/x1p 8, v0x7fb7c141c1a0_0, 1;
+    %jmp T_1.1;
+T_1.0 ;
+    %mov 8, 2, 1;
+T_1.1 ;
+; Save base=8 wid=1 in lookaside.
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.2, 4;
+    %load/x1p 9, v0x7fb7c141c230_0, 1;
+    %jmp T_1.3;
+T_1.2 ;
+    %mov 9, 2, 1;
+T_1.3 ;
+; Save base=9 wid=1 in lookaside.
+    %cmp/u 8, 9, 1;
+    %inv 4, 1;
+    %mov 8, 4, 1;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.4, 4;
+    %load/x1p 9, v0x7fb7c141c1a0_0, 1;
+    %jmp T_1.5;
+T_1.4 ;
+    %mov 9, 2, 1;
+T_1.5 ;
+; Save base=9 wid=1 in lookaside.
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.6, 4;
+    %load/x1p 10, v0x7fb7c141c230_0, 1;
+    %jmp T_1.7;
+T_1.6 ;
+    %mov 10, 2, 1;
+T_1.7 ;
+; Save base=10 wid=1 in lookaside.
+    %cmp/u 9, 10, 1;
+    %mov 9, 4, 1;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.8, 4;
+    %load/x1p 10, v0x7fb7c141c0e0_0, 1;
+    %jmp T_1.9;
+T_1.8 ;
+    %mov 10, 2, 1;
+T_1.9 ;
+; Save base=10 wid=1 in lookaside.
+    %cmp/u 9, 10, 1;
+    %or 8, 4, 1;
+    %jmp/0xz  T_1.10, 8;
+    %load/v 8, v0x7fb7c141c0e0_0, 8;
+    %set/v v0x7fb7c141c050_0, 8, 8;
+    %jmp T_1.11;
+T_1.10 ;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_1.12, 4;
+    %load/x1p 11, v0x7fb7c141c0e0_0, 1;
+    %jmp T_1.13;
+T_1.12 ;
+    %mov 11, 2, 1;
+T_1.13 ;
+    %mov 8, 11, 1; Move signal select into place
+    %mov 9, 0, 2;
+    %cmpi/u 8, 1, 3;
+    %jmp/0xz  T_1.14, 4;
+    %movi 8, 127, 8;
+    %set/v v0x7fb7c141c050_0, 8, 8;
+    %jmp T_1.15;
+T_1.14 ;
+    %movi 8, 128, 8;
+    %set/v v0x7fb7c141c050_0, 8, 8;
+T_1.15 ;
+T_1.11 ;
+    %jmp T_1;
+    .thread T_1, $push;
+    .scope S_0x7fb7c140be50;
+T_2 ;
+    %wait E_0x7fb7c1405da0;
+    %ix/load 1, 15, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.0, 4;
+    %load/x1p 8, v0x7fb7c141c1a0_0, 1;
+    %jmp T_2.1;
+T_2.0 ;
+    %mov 8, 2, 1;
+T_2.1 ;
+; Save base=8 wid=1 in lookaside.
+    %ix/load 1, 15, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.2, 4;
+    %load/x1p 9, v0x7fb7c141c230_0, 1;
+    %jmp T_2.3;
+T_2.2 ;
+    %mov 9, 2, 1;
+T_2.3 ;
+; Save base=9 wid=1 in lookaside.
+    %cmp/u 8, 9, 1;
+    %inv 4, 1;
+    %mov 8, 4, 1;
+    %ix/load 1, 15, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.4, 4;
+    %load/x1p 9, v0x7fb7c141c1a0_0, 1;
+    %jmp T_2.5;
+T_2.4 ;
+    %mov 9, 2, 1;
+T_2.5 ;
+; Save base=9 wid=1 in lookaside.
+    %ix/load 1, 15, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.6, 4;
+    %load/x1p 10, v0x7fb7c141c230_0, 1;
+    %jmp T_2.7;
+T_2.6 ;
+    %mov 10, 2, 1;
+T_2.7 ;
+; Save base=10 wid=1 in lookaside.
+    %cmp/u 9, 10, 1;
+    %mov 9, 4, 1;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.8, 4;
+    %load/x1p 10, v0x7fb7c141bfb0_0, 1;
+    %jmp T_2.9;
+T_2.8 ;
+    %mov 10, 2, 1;
+T_2.9 ;
+; Save base=10 wid=1 in lookaside.
+    %cmp/u 9, 10, 1;
+    %or 8, 4, 1;
+    %jmp/0xz  T_2.10, 8;
+    %load/v 8, v0x7fb7c141bfb0_0, 8;
+    %set/v v0x7fb7c141bf20_0, 8, 8;
+    %jmp T_2.11;
+T_2.10 ;
+    %ix/load 1, 7, 0;
+    %mov 4, 0, 1;
+    %jmp/1 T_2.12, 4;
+    %load/x1p 11, v0x7fb7c141bfb0_0, 1;
+    %jmp T_2.13;
+T_2.12 ;
+    %mov 11, 2, 1;
+T_2.13 ;
+    %mov 8, 11, 1; Move signal select into place
+    %mov 9, 0, 2;
+    %cmpi/u 8, 1, 3;
+    %jmp/0xz  T_2.14, 4;
+    %movi 8, 127, 8;
+    %set/v v0x7fb7c141bf20_0, 8, 8;
+    %jmp T_2.15;
+T_2.14 ;
+    %movi 8, 128, 8;
+    %set/v v0x7fb7c141bf20_0, 8, 8;
+T_2.15 ;
+T_2.11 ;
+    %jmp T_2;
+    .thread T_2, $push;
+    .scope S_0x7fb7c140be50;
+T_3 ;
+    %wait E_0x7fb7c1405e80;
+    %load/v 8, v0x7fb7c141c050_0, 8;
+    %load/v 16, v0x7fb7c141bf20_0, 8;
+    %set/v v0x7fb7c140bf30_0, 8, 16;
+    %jmp T_3;
+    .thread T_3, $push;
+# The file index is used to find the file name in the following table.
+:file_names 3;
+    "N/A";
+    "<interactive>";
+    "paddsb.v";
