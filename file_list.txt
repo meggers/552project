@@ -1,7 +1,11 @@
-cpu.v
+adder.v
+shifter.v
+norv.v
+paddsb.v
+andv.v
+control.v
+alu.v
 data_mem.v
 instr_mem.v
 rf_single_cycle.v
-alu.v
-adder.v
-shifter.v
+cpu.v

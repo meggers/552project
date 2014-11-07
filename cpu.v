@@ -49,9 +49,7 @@ reg [15:0] DATA_ID_EX [3:0];
 reg [15:0] DATA_EX_MEM [2:0];
 reg [15:0] DATA_MEM_WB [1:0];
 
-reg [3:0] REG_ID_EX [1:0];
-reg [3:0] REG_EX_MEM;
-reg [3:0] REG_MEM_WB;
+reg [3:0] REG_EX_MEM, REG_MEM_WB;
 
 //** DEFINE WIRES **//
 wire [15:0] pc_incr, instr, read_1, 
@@ -98,11 +96,11 @@ Control ctrl(.instr(DATA_IF_ID[IF_ID_INST][15:12]),
 	     .read_signals(read_signals));
 
 // ALU
-module alu(.ALUop(CTRL_ID_EX[ALUOpMSB, ALUOpLSB]), 
-	   .src0(DATA_ID_EX[ID_EX_OP1]), 
-	   .src1(op_2), 
-	   .result(result), 
-	   .flags(flags));
+alu alu_inst(.ALUop(CTRL_ID_EX[ALUOpMSB:ALUOpLSB]), 
+	     .src0(DATA_ID_EX[ID_EX_OP1]), 
+	     .src1(op_2), 
+	     .result(result), 
+	     .flags(flags));
 
 //** CONTINUOUS ASSIGNS **//
 assign pc_incr = pc + 4;
@@ -112,7 +110,7 @@ assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
-		pc <= 0;
+		pc <= 16'h0000;
 	end else begin
 		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_EM[EX_MEM_PC] : pc_incr;
 	end
@@ -121,13 +119,13 @@ end
 //** CONTROL PIPELINE **//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
-		CTRL_ID_EX  <= 0;
-		CTRL_EM_MEM <= 0;
-		CTRL_MEM_WB <= 0;
+		CTRL_ID_EX  <= 9'b000000000;
+		CTRL_EX_MEM <= 5'b00000;
+		CTRL_MEM_WB <= 2'b00;
 	end else begin
 		CTRL_ID_EX  <= ctrl_signals;
-		CTRL_EM_MEM <= CTRL_ID_EX[Branch:MemWrite];
-		CTRL_MEM_WB <= CTRL_EM_MEM[MemToReg:RegWrite];
+		CTRL_EX_MEM <= CTRL_ID_EX[Branch:MemWrite];
+		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:RegWrite];
 	end
 end
 
