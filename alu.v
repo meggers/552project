@@ -135,19 +135,20 @@ reg[2:0] ALUop;
 reg [15:0] in1, in2;
 wire [15:0] out;
 wire zr, neg, ov;
-reg [2:0] flags;
+wire [2:0] flags;
 integer i = 0;
 
 alu dut_alu(ALUop, in1, in2, out, flags); 
 
-assign flags = {neg, ov, zr}; 
+assign {neg, ov, zr} = flags; 
 
 initial begin
 	while (i < 10000) begin	
 	#5
 	in1 = $random;
 	in2 = $random;
-    ALUop = $random;
+        ALUop = $random;
+
 	#1
 	$display("ALUop = %h,  in1 = %h, in2 = %h, out = %h, zr = %b, neg = %b, ov = %b", ALUop, in1, in2, out, zr, neg, ov);
 	i = i + 1;
