@@ -1,4 +1,4 @@
-module alu(ALUop, src0, src1, result, ov, zr, neg);
+module alu(ALUop, src0, src1, result, flags);
 // ADD, PADDSB, SUB, AND, NOR, SLL, SRL, SRA
 
 // ADD 0000
@@ -9,13 +9,25 @@ module alu(ALUop, src0, src1, result, ov, zr, neg);
 // SLL 0101
 // SRL 0110
 // SRA 0111
-
+// neg ov zr
 input [15:0] src0,src1;
 input [2:0] ALUop; 
 output reg [15:0] result;
-output reg ov,zr,neg; 
+output reg [2:0] flags; 
 
+localparam ADD = 3'b000;
+localparam PADDSB = 3'b001;
+localparam SUB = 3'b010;
+localparam AND = 3'b011;
+localparam NOR = 3'b100;
+localparam SLL = 3'b101;
+localparam SRL = 3'b110;
+localparam SRA = 3'b111;
 
+wire neg, ov, zr;
+always @ (*) begin
+	flags = {neg, ov, zr};
+end
 
 wire [15:0] add_out, shift_out;
 wire add_zr, add_ng, add_ov;
@@ -66,48 +78,52 @@ shifter shift(
 );
 
 always@(*) begin
-    if(ALUop == 3'd0) begin
+    if(ALUop == ADD) begin
         result = add_out;
         ov = add_ov;
         zr = add_zr;
         neg = add_neg;
-    end else if(ALUop == 3'd1) begin
+    end else if(ALUop == PADDSB) begin
         result = padd_out;
         ov = 1'b0;
         zr = 1'b0;
         neg = 1'b0;
-    end else if(ALUop == 3'd2) begin
+    end else if(ALUop == ADD) begin
         result = add_out;
         ov = add_ov;
         zr = add_zr;
         neg = add_neg;
-    end else if(ALUop == 3'd3) begin
+    end else if(ALUop == AND) begin
         result = and_out;
         ov = 1'b0;
         zr = and_zr;
         neg = 1'b0;
-    end else if(ALUop == 3'd4) begin
+    end else if(ALUop == NOR) begin
         result = nor_out;
         ov = 1'b0;
         zr = nor_zr;
         neg = 1'b0;
-    end else if(ALUop == 3'd5) begin
+    end else if(ALUop == SLL) begin
         result = shift_out;
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0;
-    end else if(ALUop == 3'd6) begin
+    end else if(ALUop == SRL) begin
         result = shift_out;
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0;
-    end else if(ALUop == 3'd7) begin
+    end else if(ALUop == SRA) begin
         result = shift_out;
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0; 
     end else begin
-        $display("oops");
+        // For now, default to add just so it can synthesize
+        result = add_out;
+        ov = add_ov;
+        zr = add_zr;
+        neg = add_neg;
     end
         
 end          
@@ -119,10 +135,14 @@ reg[2:0] ALUop;
 reg [15:0] in1, in2;
 wire [15:0] out;
 wire zr, neg, ov;
+wire [2:0] flags;
 integer i = 0;
 
-alu dut_alu(ALUop, in1, in2, out, zr, neg, ov);
+alu dut_alu(ALUop, in1, in2, out, flags); 
 
+always @(*)begin
+    flags = {neg, ov, zr}; 
+end
 
 initial begin
 	while (i < 10000) begin	
