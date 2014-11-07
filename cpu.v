@@ -125,7 +125,7 @@ always @(posedge clk or negedge rst_n) begin
 
 		DATA_ID_EX[ID_EX_PC] <= DATA_IF_ID[IF_ID_PC]; // TODO: Race conditions?
 		DATA_ID_EX[ID_EX_OP1] <= read_1;
-		DATA_ID_EX[ID_EX_OP2] <= read_2;
+		DATA_ID_EX[ID_1EX_OP2] <= read_2;
 		DATA_ID_EX[ID_EX_IMM] <= ;
 		REG_ID_EX[ID_EX_R0] <= ;
 		REG_ID_EX[ID_EX_R1] <= ;
