@@ -17,9 +17,8 @@ localparam MemWrite = 2;
 localparam MemRead  = 3;
 localparam PCSrc    = 4;
 localparam ALUSrc   = 5;
-localparam RegDst   = 6;
-localparam ALUOpLSB = 7;
-localparam ALUUpMSB = 8;
+localparam ALUOpLSB = 6;
+localparam ALUOpMSB = 8;
 
 localparam IF_ID_PC    = 0;
 localparam IF_ID_INST  = 1;
@@ -55,11 +54,13 @@ reg [3:0] REG_EX_MEM;
 reg [3:0] REG_MEM_WB;
 
 //** DEFINE WIRES **//
-wire [15:0] pc_incr;
-wire [15:0] instr;
+wire [15:0] pc_incr, instr, read_1, 
+	    read_2, dm_read, op_2,
+	    result;
+
 wire [8:0] ctrl_signals;
-wire [15:0] read_1, read_2;
-wire [15:0] dm_read;
+
+wire [2:0] flags;
 
 //** DEFINE MODULES **//
 IM instr_mem(.clk(clk), 		// INSTRUCTION MEMORY
@@ -88,8 +89,16 @@ rf  reg_file(.clk(clk), 		// REGISTER FILE
 Control ctrl(.instr(DATA_IF_ID[IF_ID_INST][15:12]),	// CONTROL BLOCK
 	     .ctrl_signals(ctrl_signals));
 
+
+module alu(.ALUop(CTRL_ID_EX[ALUOpMSB, ALUOpLSB]), 
+	   .src0(DATA_ID_EX[ID_EX_OP1]), 
+	   .src1(op_2), 
+	   .result(result), 
+	   .flags(flags));
+
 //** CONTINUOUS ASSIGNS **//
 assign pc_incr = pc + 4;
+assign op_2 = CTRL_ID_EX[ALUSrc] ? {12'h000, DATA_ID_EX[ID_EX_INST][3:0]} : DATA_ID_EX[ID_EX_OP1];
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
@@ -148,6 +157,16 @@ endmodule Control(instr, ctrl_signals);
 
 input [3:0] instr;
 output [8:0] ctrl_signals;
+
+localparam RegWrite = 0;
+localparam MemToReg = 1;
+localparam MemWrite = 2;
+localparam MemRead  = 3;
+localparam PCSrc    = 4;
+localparam ALUSrc   = 5;
+localparam RegDst   = 6;
+localparam ALUOpLSB = 7;
+localparam ALUUpMSB = 8;
 
 endmodule
 
