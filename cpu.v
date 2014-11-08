@@ -20,8 +20,6 @@ localparam MemWrite    = 3;
 localparam MemRead     = 4;
 localparam Branch      = 5;
 localparam ALUSrc      = 6;
-localparam ALUOpLSB    = 7;
-localparam ALUOpMSB    = 9;
 
 localparam IF_ID_PC    = 0;
 localparam IF_ID_INST  = 1;
@@ -111,9 +109,10 @@ Control ctrl(
 
 // ALU
 alu alu_inst(
-	.ALUop(CTRL_ID_EX[ALUOpMSB:ALUOpLSB]), 
+	.ALUop(DATA_ID_EX[ID_EX_INST][15:11]), 
 	.src0(DATA_ID_EX[ID_EX_OP1]), 
 	.src1(op_2), 
+	.offset(DATA_ID_EX[ID_EX_INST][3:0]),
 	.result(result), 
 	.flags(flags)
 );
