@@ -62,12 +62,15 @@ wire [2:0] flags;
 
 wire [1:0] read_signals;
 
+wire pc_write, if_id_write, stall;
+
 //** DEFINE MODULES **//
 // INSTRUCTION MEMORY
 IM instr_mem(.clk(clk),
 	     .addr(pc), 
              .rd_en(1'b1),
-	     .instr(instr));	
+	     .instr(instr)
+);	
 			
 // DATA MEMORY
 DM  data_mem(.clk(clk),
@@ -75,7 +78,8 @@ DM  data_mem(.clk(clk),
 	     .re(CTRL_EX_MEM[MemRead]), 
              .we(CTRL_EX_MEM[MemWrite]),
 	     .wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
-	     .rd_data(dm_read));
+	     .rd_data(dm_read)
+);
 
 // REGISTER FILE
 rf  reg_file(.clk(clk),
@@ -88,19 +92,31 @@ rf  reg_file(.clk(clk),
 	     .dst_addr(REG_MEM_WB), 
 	     .dst(write_data),
 	     .we(CTRL_MEM_WB[RegWrite]), 
-	     .hlt(hlt));
+	     .hlt(hlt)
+);
 
 // CONTROL BLOCK
 Control ctrl(.instr(DATA_IF_ID[IF_ID_INST][15:12]), 
 	     .ctrl_signals(ctrl_signals), 
-	     .read_signals(read_signals));
+	     .read_signals(read_signals)
+);
 
 // ALU
 alu alu_inst(.ALUop(CTRL_ID_EX[ALUOpMSB:ALUOpLSB]), 
 	     .src0(DATA_ID_EX[ID_EX_OP1]), 
 	     .src1(op_2), 
 	     .result(result), 
-	     .flags(flags));
+	     .flags(flags)
+);
+
+// HAZARD DETECTION UNIT
+HDU hdu(.instr(DATA_IF_IF[IF_ID_INST]),
+	.write_data(write_data),
+	.mem_read(CTRL_ID_EX[MemRead]),
+	.pc_write(pc_write),
+	.if_id_write(if_id_write),
+	.stall(stall)
+);
 
 //** CONTINUOUS ASSIGNS **//
 assign pc_incr = pc + 4;
@@ -123,7 +139,7 @@ always @(posedge clk or negedge rst_n) begin
 		CTRL_EX_MEM <= 5'b00000;
 		CTRL_MEM_WB <= 2'b00;
 	end else begin
-		CTRL_ID_EX  <= ctrl_signals;
+		CTRL_ID_EX  <= stall ? 9'b000000000 : ctrl_signals;
 		CTRL_EX_MEM <= CTRL_ID_EX[Branch:MemWrite];
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:RegWrite];
 	end
@@ -152,8 +168,13 @@ always @(posedge clk or negedge rst_n) begin
 
 		FLAG <= 3'b000;
 	end else begin
-		DATA_IF_ID[IF_ID_PC] <= pc_incr;
-		DATA_IF_ID[IF_ID_INST] <= instr;
+		if (if_id_write) begin
+			DATA_IF_ID[IF_ID_PC] <= pc_incr;
+			DATA_IF_ID[IF_ID_INST] <= instr;
+		end else begin
+			DATA_IF_ID[IF_ID_PC] <= DATA_IF_ID[IF_ID_PC];
+			DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
+		end
 
 		DATA_ID_EX[ID_EX_PC] <= DATA_IF_ID[IF_ID_PC];
 		DATA_ID_EX[ID_EX_OP1] <= read_1;
