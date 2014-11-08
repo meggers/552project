@@ -9,5 +9,5 @@ control.v
 alu.v
 data_mem.v
 instr_mem.v
-rf_single_cycle.v
+rf_pipelined.v
 cpu.v
