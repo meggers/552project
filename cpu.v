@@ -119,15 +119,17 @@ alu alu_inst(
 
 // HAZARD DETECTION UNIT
 HDU hdu(
-	.instr(DATA_IF_ID[IF_ID_INST]),
-	.write_data(write_data),
-	.mem_read(CTRL_ID_EX[MemRead]),
-	.pc_write(pc_write),
-	.if_id_write(if_id_write),
+	.if_id_rs(DATA_IF_ID[IF_ID_INST][7:4]), 
+	.if_id_rt(DATA_IF_ID[IF_ID_INST][3:0]), 
+	.id_ex_rt(DATA_ID_EX[ID_EX_INST][11:8]), 
+	.id_ex_mr(CTRL_ID_EX[MemRead]), 
+	.pc_write(pc_write), 
+	.if_id_write(if_id_write), 
 	.stall(stall)
 );
 
 // FORWARDING UNIT
+
 
 // BRANCH CONDITION
 Branch branch_logic(
