@@ -1,28 +1,19 @@
-module alu(ALUop, src0, src1, result, flags);
+module alu(ALUop, src0, src1, offset, result, flags);
 // ADD, PADDSB, SUB, AND, NOR, SLL, SRL, SRA
 
-// ADD 0000
-// PADDSB 0001
-// SUB 0010
-// AND 0011
-// NOR 0100
-// SLL 0101
-// SRL 0110
-// SRA 0111
-// neg ov zr
-input [15:0] src0,src1;
-input [2:0] ALUop; 
+input [15:0] src0, src1;
+input [3:0] ALUop, offset;
 output reg [15:0] result;
 output reg [2:0] flags; 
 
-localparam ADD = 3'b000;
-localparam PADDSB = 3'b001;
-localparam SUB = 3'b010;
-localparam AND = 3'b011;
-localparam NOR = 3'b100;
-localparam SLL = 3'b101;
-localparam SRL = 3'b110;
-localparam SRA = 3'b111;
+localparam ADD = 4'b0000;
+localparam PADDSB = 4'b0001;
+localparam SUB = 4'b0010;
+localparam AND = 4'b0011;
+localparam NOR = 4'b0100;
+localparam SLL = 4'b0101;
+localparam SRL = 4'b0110;
+localparam SRA = 4'b0111;
 
 reg neg, ov, zr;
 always @ (*) begin
@@ -65,9 +56,6 @@ norv norALUE(
     .zr (nor_zr)
 );
 
-// how should we do shamt?
-// either extend src 1 or have an imm field
-// for now pretend last 4 bits of src 1 is imm
 wire shift_zr;
 shifter shift(
     .src (src0),
@@ -119,11 +107,10 @@ always@(*) begin
         zr = shift_zr;
         neg = 1'b0; 
     end else begin
-        // For now, default to add just so it can synthesize
-        result = add_out;
-        ov = add_ov;
-        zr = add_zr;
-        neg = add_neg;
+        result = {{12{offset[3]}}, offset[3:0]};
+        ov = 1'b0;
+        zr = 1'b0;
+        neg = 1'b0; 
     end
         
 end          
@@ -131,14 +118,15 @@ end
 endmodule
 
 module alu_tb();
-reg[2:0] ALUop;
+reg[3:0] ALUop;
 reg [15:0] in1, in2;
+reg [3:0] offset;
 wire [15:0] out;
 wire zr, neg, ov;
 wire [2:0] flags;
 integer i = 0;
 
-alu dut_alu(ALUop, in1, in2, out, flags); 
+alu dut_alu(ALUop, in1, in2, offset,  out, flags); 
 
 assign {neg, ov, zr} = flags; 
 
