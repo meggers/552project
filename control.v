@@ -35,13 +35,13 @@ output reg [8:0] ctrl_signals;
 output reg [1:0] read_signals;
 
 always@(*) begin
-	if(instr == 4'b1001 || instr == 4'b1100 || instr == 4'b1110 || instr == 4'b1111) begin
+	if(instr == SW || instr == B || instr == JR || instr == HLT) begin
 	    ctrl_signals[RegWrite] = 0;
 	end else begin
 	    ctrl_signals[RegWrite] = 1;
 	end
 
-	if(instr == 4'b1000 || instr == 4'b1010 || instr == 4'b1011) begin
+	if(instr == LW || instr == LHB || instr == LLB) begin
 	    ctrl_signals[MemToReg] = 1;
 	end else begin
 	    ctrl_signals[MemToReg] = 0;

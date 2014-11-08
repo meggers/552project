@@ -6,7 +6,7 @@ output reg[15:0] out;
 output reg zr;
 
 always@(*) begin
-out = in1 ~| in2;
+out = in1 & in2;
 if(out == 16'h0000) begin
     zr = 1;
 end
