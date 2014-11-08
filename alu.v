@@ -14,6 +14,10 @@ localparam NOR = 4'b0100;
 localparam SLL = 4'b0101;
 localparam SRL = 4'b0110;
 localparam SRA = 4'b0111;
+localparam LW = 4'b1000;
+localparam SW = 4'b1001;
+localparam LHB = 4'b1010;
+localparam LLB = 4'b1011;
 
 reg neg, ov, zr;
 always @ (*) begin
@@ -106,12 +110,18 @@ always@(*) begin
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0; 
-    end else begin
+    end else if(ALUop == LW || ALUop = SW) begin
         result = {{12{offset[3]}}, offset[3:0]};
         ov = 1'b0;
         zr = 1'b0;
         neg = 1'b0; 
     end
+    end else if(ALUop == LHB) begin
+        result = {in1[7:0], in2[7:0], offset};
+    end 
+    end else begin
+	result = {in1[7:0], in2[7:0], offset};
+    end 
         
 end          
 
