@@ -2,11 +2,11 @@ module FU(id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd, ex_mem_rw, mem_wb_rw, forwar
 
 input [3:0] id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd;
 input ex_mem_rw, mem_wb_rw;
-output [1:0] forwarda, forwardb;
+output reg [1:0] forwarda, forwardb;
 
 localparam NO_HAZARD  = 2'b00;
 localparam EX_HAZARD  = 2'b10;
-localparam MEM_Hazard = 2'b01;
+localparam MEM_HAZARD = 2'b01;
 
 always @(*) begin
 	if (ex_mem_rw & |ex_mem_rd) begin // EX Hazards
@@ -22,10 +22,20 @@ always @(*) begin
 			forwardb <= NO_HAZARD;
 		end
 	end else if ((mem_wb_rw & |mem_wb_rd)) begin // MEM Hazards
+		if ((ex_mem_rd != id_ex_rs) & mem_wb_rd == id_ex_rs) begin
+			forwarda <= MEM_HAZARD;
+		end else begin
+			forwarda <= NO_HAZARD;
+		end
 
+		if ((ex_mem_rd != id_ex_rt) & mem_wb_rd == id_ex_rt) begin
+			forwardb <= MEM_HAZARD;
+		end else begin
+			forwardb <= NO_HAZARD;
+		end
 	end else begin
 		forwarda <= NO_HAZARD;
-		forwardb <= NO_HAZARD: 
+		forwardb <= NO_HAZARD;
 	end
 end
 

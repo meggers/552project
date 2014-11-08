@@ -1,7 +1,7 @@
 module HDU(if_id_rs, if_id_rt, id_ex_rt, id_ex_mr, pc_write, if_id_write, stall);
 
 input [3:0] if_id_rs, if_id_rt, id_ex_rt;
-input mem_read;
+input id_ex_mr;
 output pc_write, if_id_write, stall;
 
 localparam DETECTED 	= 1'b1;

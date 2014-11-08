@@ -4,6 +4,7 @@ norv.v
 paddsb.v
 andv.v
 hazard_detect.v
+forwarding_unit.v
 control.v
 alu.v
 data_mem.v

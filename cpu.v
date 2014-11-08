@@ -38,6 +38,7 @@ localparam EX_MEM_INST = 3;
 
 localparam MEM_WB_RD   = 0;
 localparam MEM_WB_RSLT = 1;
+localparam MEM_WB_INST = 2;
 
 //** DEFINE REGISTERS **//
 reg [2:0] FLAG;
@@ -49,9 +50,7 @@ reg [1:0] CTRL_MEM_WB;
 reg [15:0] DATA_IF_ID [1:0];
 reg [15:0] DATA_ID_EX [3:0];
 reg [15:0] DATA_EX_MEM [3:0];
-reg [15:0] DATA_MEM_WB [1:0];
-
-reg [3:0] REG_MEM_WB;
+reg [15:0] DATA_MEM_WB [2:0];
 
 //** DEFINE WIRES **//
 wire [15:0] pc_incr, instr, read_1, 
@@ -62,7 +61,7 @@ wire [8:0] ctrl_signals;
 
 wire [2:0] flags;
 
-wire [1:0] read_signals;
+wire [1:0] read_signals, forwardA, forwardB;
 
 wire pc_write, if_id_write, stall, branch;
 
@@ -94,7 +93,7 @@ rf  reg_file(
 	.p1(read_2),
 	.re0(read_signals[0]), 
 	.re1(read_signals[1]), 
-	.dst_addr(REG_MEM_WB), 
+	.dst_addr(DATA_MEM_WB[MEM_WB_INST][11:8]), 
 	.dst(write_data),
 	.we(CTRL_MEM_WB[RegWrite]), 
 	.hlt(hlt)
@@ -129,7 +128,16 @@ HDU hdu(
 );
 
 // FORWARDING UNIT
-
+FU forward_unit(
+	.id_ex_rt(DATA_ID_EX[ID_EX_INST][3:0]), 
+	.id_ex_rs(DATA_ID_EX[ID_EX_INST][7:4]), 
+	.ex_mem_rd(DATA_EX_MEM[EX_MEM_INST][11:8]), 
+	.mem_wb_rd(DATA_MEM_WB[MEM_WB_INST][11:8]), 
+	.ex_mem_rw(CTRL_EX_MEM[RegWrite]), 
+	.mem_wb_rw(CTRL_MEM_WB[RegWrite]), 
+	.forwarda(forwardA), 
+	.forwardb(forwardB)
+);
 
 // BRANCH CONDITION
 Branch branch_logic(
@@ -183,8 +191,7 @@ always @(posedge clk or negedge rst_n) begin
 
 		DATA_MEM_WB[0] <= 16'h0000;
 		DATA_MEM_WB[1] <= 16'h0000;
-
-		REG_MEM_WB     <= 4'b0000;
+		DATA_MEM_WB[2] <= 16'h0000;
 
 		FLAG           <= 3'b000;
 	end else begin
@@ -209,7 +216,7 @@ always @(posedge clk or negedge rst_n) begin
 
 		DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
 		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
-		REG_MEM_WB               <= DATA_EX_MEM[EX_MEM_INST][11:8];
+		DATA_MEM_WB[MEM_WB_INST] <= DATA_EX_MEM[EX_MEM_INST];
 
 		hlt <= CTRL_MEM_WB[Halt];
 	end
