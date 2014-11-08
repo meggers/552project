@@ -110,18 +110,18 @@ always@(*) begin
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0; 
-    end else if(ALUop == LW || ALUop = SW) begin
+    end else if(ALUop == LW || ALUop == SW) begin
         result = {{12{offset[3]}}, offset[3:0]};
         ov = 1'b0;
         zr = 1'b0;
-        neg = 1'b0; 
-    end
-    end else if(ALUop == LHB) begin
-        result = {in1[7:0], in2[7:0], offset};
-    end 
+        neg = 1'b0;
+    end else if (ALUop == LHB) begin
+        result = {offset, src0[7:0]};
+    end else if (ALUop == LLB) begin
+	result = {{8{offset[7]}}, offset};
     end else begin
-	result = {in1[7:0], in2[7:0], offset};
-    end 
+	result = 16'h0000;
+    end
         
 end          
 
