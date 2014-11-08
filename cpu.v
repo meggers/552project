@@ -122,9 +122,10 @@ HDU hdu(.instr(DATA_IF_ID[IF_ID_INST]),
 
 
 //** CONTINUOUS ASSIGNS **//
-assign pc_incr = pc + 4;										// INCREMENT PC THIS MAY NOT WORK
-assign op_2 = CTRL_ID_EX[ALUSrc] ? {12'h000, DATA_ID_EX[ID_EX_INST][3:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 BE IDK
+assign pc_incr = pc + 4;										// INCREMENT PC
+assign op_2 = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 TO ALU BE
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE?
+
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
@@ -194,6 +195,52 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
 		REG_MEM_WB <= REG_EX_MEM;
 	end
+end
+
+endmodule
+
+module Branch(condition, flags, branch);
+
+input [2:0] condition;
+output branch;
+
+localparam NOT_EQUAL			= 3'b000;
+localparam EQUAL			= 3'b001;
+localparam GREATER_THAN			= 3'b010;
+localparam LESS_THAN			= 3'b011;
+localparam GREATER_THAN_OR_EQUAL	= 3'b100;
+localparam LESS_THAN_OR_EQUAL		= 3'b101;
+localparam OVERFLOW			= 3'b110;
+localparam UNCONDITIONAL		= 3'b111;
+
+localparam BRANCH			= 1'b1;
+localparam NO_BRANCH			= 1'b0;
+
+localparam Z = 0;	// Index for Zero flag
+localparam V = 1;	// Index for Overflow flag
+localparam N = 2;	// Index for Sign flag
+
+always @(*) begin
+	case (condition)
+		NOT_EQUAL : 
+			branch = ~flags[Z] ? BRANCH : NO_BRANCH;
+		EQUAL : 
+			branch = flags[Z] ? BRANCH : NO_BRANCH;
+		GREATER_THAN : 
+			branch = ~(flags[Z] | flags[N]) ? BRANCH : NO_BRANCH;
+		LESS_THAN : 
+			branch = flags[N] ? BRANCH : NO_BRANCH;
+		GREATER_THAN_OR_EQUAL : 
+			branch = (flags[Z] | ~flags[N]) ? BRANCH : NO_BRANCH;
+		LESS_THAN_OR_EQUAL : 
+			branch = (flags[N] | flags[Z]) ? BRANCH : NO_BRANCH;
+		OVERFLOW : 
+			branch = flags[V] ? BRANCH : NO_BRANCH;
+		UNCONDITIONAL : 
+			branch = BRANCH;
+		default : 
+			branch = NO_BRANCH;
+	endcase
 end
 
 endmodule
