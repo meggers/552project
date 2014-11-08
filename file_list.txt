@@ -3,6 +3,7 @@ shifter.v
 norv.v
 paddsb.v
 andv.v
+hazard_detect.v
 control.v
 alu.v
 data_mem.v

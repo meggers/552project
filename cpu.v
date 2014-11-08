@@ -110,7 +110,7 @@ alu alu_inst(.ALUop(CTRL_ID_EX[ALUOpMSB:ALUOpLSB]),
 );
 
 // HAZARD DETECTION UNIT
-HDU hdu(.instr(DATA_IF_IF[IF_ID_INST]),
+HDU hdu(.instr(DATA_IF_ID[IF_ID_INST]),
 	.write_data(write_data),
 	.mem_read(CTRL_ID_EX[MemRead]),
 	.pc_write(pc_write),
@@ -128,7 +128,7 @@ always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		pc <= 16'h0000;
 	end else begin
-		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_EM[EX_MEM_PC] : pc_incr;
+		pc <= (CTRL_EX_MEM[PCSrc] & FLAG[Z]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr;
 	end
 end
 
@@ -140,7 +140,7 @@ always @(posedge clk or negedge rst_n) begin
 		CTRL_MEM_WB <= 2'b00;
 	end else begin
 		CTRL_ID_EX  <= stall ? 9'b000000000 : ctrl_signals;
-		CTRL_EX_MEM <= CTRL_ID_EX[Branch:MemWrite];
+		CTRL_EX_MEM <= CTRL_ID_EX[PCSrc:MemWrite];
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:RegWrite];
 	end
 end
@@ -193,4 +193,4 @@ always @(posedge clk or negedge rst_n) begin
 	end
 end
 
-module
+endmodule
