@@ -13,6 +13,10 @@ localparam Z = 0;	// Index for Zero flag
 localparam V = 1;	// Index for Overflow flag
 localparam N = 2;	// Index for Sign flag
 
+localparam SRC_ID_EX  = 2'b00;
+localparam SRC_EX_MEM = 2'b10;
+localparam SRC_MEM_WB = 2'b01;
+
 localparam Halt        = 0;
 localparam RegWrite    = 1;
 localparam MemToReg    = 2;
@@ -54,8 +58,8 @@ reg [15:0] DATA_MEM_WB [2:0];
 
 //** DEFINE WIRES **//
 wire [15:0] pc_incr, instr, read_1, 
-	    read_2, dm_read, op_2,
-	    result, write_data;
+	    read_2, dm_read, op_1, op_2,
+	    result, write_data, id_ex_b;
 
 wire [8:0] ctrl_signals;
 
@@ -109,7 +113,7 @@ Control ctrl(
 // ALU
 alu alu_inst(
 	.ALUop(DATA_ID_EX[ID_EX_INST][15:12]), 
-	.src0(DATA_ID_EX[ID_EX_OP1]), 
+	.src0(op_1), 
 	.src1(op_2), 
 	.offset(DATA_ID_EX[ID_EX_INST][3:0]),
 	.result(result), 
@@ -148,8 +152,17 @@ Branch branch_logic(
 
 //** CONTINUOUS ASSIGNS **//
 assign pc_incr = pc + 4;										// INCREMENT PC
-assign op_2 = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 TO ALU BE
-assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE?
+assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE
+assign id_ex_b = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];     // WHAT IS OP2
+
+assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
+	      (forwardA == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardA == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP1];
+
+assign op_2 = (forwardB == SRC_ID_EX)  ? id_ex_b : 
+	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardB == SRC_MEM_WB) ? write_data : id_ex_b;
+
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
