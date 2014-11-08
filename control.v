@@ -17,13 +17,16 @@ localparam JAL 		= 4'b1101;
 localparam JR 		= 4'b1110;
 localparam HLT 		= 4'b1111;
 
-localparam RegWrite = 0;
-localparam MemToReg = 1;
-localparam MemWrite = 2;
-localparam MemRead  = 3;
-localparam PCSrc    = 4;
-localparam ALUSrc   = 5;
-localparam ALUop    = 6;
+localparam Halt        = 0
+localparam RegWrite    = 1;
+localparam MemToReg    = 2;
+localparam MemWrite    = 3;
+localparam MemRead     = 4;
+localparam Branch      = 5;
+localparam ALUSrc      = 6;
+localparam ALUOpLSB    = 7;
+localparam ALUOpMSB    = 9;
+
 localparam re0      = 0;
 localparam re1      = 1;
 
