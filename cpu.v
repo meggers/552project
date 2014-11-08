@@ -118,10 +118,13 @@ HDU hdu(.instr(DATA_IF_ID[IF_ID_INST]),
 	.stall(stall)
 );
 
+// FORWARDING UNIT
+
+
 //** CONTINUOUS ASSIGNS **//
-assign pc_incr = pc + 4;
-assign op_2 = CTRL_ID_EX[ALUSrc] ? {12'h000, DATA_ID_EX[ID_EX_INST][3:0]} : DATA_ID_EX[ID_EX_OP1];
-assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];
+assign pc_incr = pc + 4;										// INCREMENT PC THIS MAY NOT WORK
+assign op_2 = CTRL_ID_EX[ALUSrc] ? {12'h000, DATA_ID_EX[ID_EX_INST][3:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 BE IDK
+assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE?
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
