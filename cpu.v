@@ -47,7 +47,7 @@ reg [1:0] CTRL_MEM_WB;
 
 reg [15:0] DATA_IF_ID [1:0];
 reg [15:0] DATA_ID_EX [3:0];
-reg [15:0] DATA_EX_MEM [2:0];
+reg [15:0] DATA_EX_MEM [3:0];
 reg [15:0] DATA_MEM_WB [1:0];
 
 reg [3:0] REG_MEM_WB;
@@ -129,7 +129,7 @@ HDU hdu(
 
 // BRANCH CONDITION
 Branch branch_logic(
-	.condition(DATA_EX_MEM[EX_MEM_INSTR][11:9]), 
+	.condition(DATA_EX_MEM[EX_MEM_INST][11:9]), 
 	.flags(FLAG), 
 	.branch(branch)
 );
@@ -139,13 +139,12 @@ assign pc_incr = pc + 4;										// INCREMENT PC
 assign op_2 = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 TO ALU BE
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE?
 
-
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;
 	end else begin
-		pc <= (branch & CTRL_EX_MEM[BRANCH]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr;
+		pc <= (branch & CTRL_EX_MEM[Branch]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr;
 	end
 end
 
@@ -215,7 +214,7 @@ endmodule
 module Branch(condition, flags, branch);
 
 input [2:0] condition, flags;
-output branch;
+output reg branch;
 
 localparam NOT_EQUAL			= 3'b000;
 localparam EQUAL			= 3'b001;
