@@ -13,7 +13,7 @@ localparam Z = 0;	// Index for Zero flag
 localparam V = 1;	// Index for Overflow flag
 localparam N = 2;	// Index for Sign flag
 
-localparam Halt        = 0
+localparam Halt        = 0;
 localparam RegWrite    = 1;
 localparam MemToReg    = 2;
 localparam MemWrite    = 3;
@@ -109,7 +109,7 @@ Control ctrl(
 
 // ALU
 alu alu_inst(
-	.ALUop(DATA_ID_EX[ID_EX_INST][15:11]), 
+	.ALUop(DATA_ID_EX[ID_EX_INST][15:12]), 
 	.src0(DATA_ID_EX[ID_EX_OP1]), 
 	.src1(op_2), 
 	.offset(DATA_ID_EX[ID_EX_INST][3:0]),
@@ -140,7 +140,6 @@ Branch branch_logic(
 assign pc_incr = pc + 4;										// INCREMENT PC
 assign op_2 = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];	// WHAT SHOULD OP2 TO ALU BE
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE?
-assign hlt = CTRL_MEM_WB[Halt];
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
@@ -209,6 +208,8 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
 		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
 		REG_MEM_WB               <= DATA_EX_MEM[EX_MEM_INST][11:8];
+
+		hlt <= CTRL_MEM_WB[Halt];
 	end
 end
 

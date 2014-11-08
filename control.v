@@ -17,7 +17,7 @@ localparam JAL 		= 4'b1101;
 localparam JR 		= 4'b1110;
 localparam HLT 		= 4'b1111;
 
-localparam Halt        = 0
+localparam Halt        = 0;
 localparam RegWrite    = 1;
 localparam MemToReg    = 2;
 localparam MemWrite    = 3;
@@ -60,9 +60,9 @@ always@(*) begin
 	end
 
 	if(instr == 4'b1100 || instr == 4'b1101 || instr == 4'b1110 || instr == 4'b1111) begin
-	    ctrl_signals[PCSrc] = 1;
+	    ctrl_signals[Branch] = 1;
 	end else begin
-	    ctrl_signals[PCSrc] = 0;
+	    ctrl_signals[Branch] = 0;
 	end
 
 	if(instr == 4'b1000 || instr == 4'b1001 || instr == 4'b1010 || instr == 4'b1011) begin
