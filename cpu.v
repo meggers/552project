@@ -47,9 +47,9 @@ localparam MEM_WB_INST = 2;
 //** DEFINE REGISTERS **//
 reg [2:0] FLAG;
 
-reg [8:0] CTRL_ID_EX;
-reg [4:0] CTRL_EX_MEM;
-reg [1:0] CTRL_MEM_WB;
+reg [6:0] CTRL_ID_EX;
+reg [5:0] CTRL_EX_MEM;
+reg [2:0] CTRL_MEM_WB;
 
 reg [15:0] DATA_IF_ID [1:0];
 reg [15:0] DATA_ID_EX [3:0];
@@ -61,7 +61,7 @@ wire [15:0] pc_incr, instr, read_1,
 	    read_2, dm_read, op_1, op_2,
 	    result, write_data, id_ex_b;
 
-wire [8:0] ctrl_signals;
+wire [6:0] ctrl_signals;
 
 wire [2:0] flags;
 
@@ -177,13 +177,13 @@ end
 //** CONTROL PIPELINE **//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
-		CTRL_ID_EX  <= 9'b000000000;
-		CTRL_EX_MEM <= 5'b00000;
-		CTRL_MEM_WB <= 2'b00;
+		CTRL_ID_EX  <= 7'b0000000;
+		CTRL_EX_MEM <= 6'b000000;
+		CTRL_MEM_WB <= 3'b000;
 	end else begin
-		CTRL_ID_EX  <= stall ? 9'b000000000 : ctrl_signals;
-		CTRL_EX_MEM <= CTRL_ID_EX[Branch:MemWrite];
-		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:RegWrite];
+		CTRL_ID_EX  <= stall ? 7'b0000000 : ctrl_signals;
+		CTRL_EX_MEM <= CTRL_ID_EX[Branch:Halt];
+		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 	end
 end
 
