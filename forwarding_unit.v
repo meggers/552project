@@ -9,32 +9,19 @@ localparam EX_HAZARD  = 2'b10;
 localparam MEM_HAZARD = 2'b01;
 
 always @(*) begin
-	if (ex_mem_rw & |ex_mem_rd) begin // EX Hazards
-		if (ex_mem_rd == id_ex_rs) begin
-			forwarda <= EX_HAZARD;
-		end else begin
-			forwarda <= NO_HAZARD;
-		end
-
-		if (ex_mem_rd == id_ex_rt) begin
-			forwardb <= EX_HAZARD;
-		end else begin
-			forwardb <= NO_HAZARD;
-		end
-	end else if ((mem_wb_rw & |mem_wb_rd)) begin // MEM Hazards
-		if ((ex_mem_rd != id_ex_rs) & mem_wb_rd == id_ex_rs) begin
-			forwarda <= MEM_HAZARD;
-		end else begin
-			forwarda <= NO_HAZARD;
-		end
-
-		if ((ex_mem_rd != id_ex_rt) & mem_wb_rd == id_ex_rt) begin
-			forwardb <= MEM_HAZARD;
-		end else begin
-			forwardb <= NO_HAZARD;
-		end
+	if ((ex_mem_rw & |ex_mem_rd) & (ex_mem_rd == id_ex_rs)) begin
+		forwarda <= EX_HAZARD;
+	end else if ((mem_wb_rw & |mem_wb_rd) & (mem_wb_rd == id_ex_rs)) begin
+		forwarda <= MEM_HAZARD;
 	end else begin
 		forwarda <= NO_HAZARD;
+	end
+
+	if ((ex_mem_rw & |ex_mem_rd) & (ex_mem_rd == id_ex_rt)) begin
+		forwardb <= EX_HAZARD;
+	end else if ((mem_wb_rw & |mem_wb_rd) & (mem_wb_rd == id_ex_rt)) begin
+		forwardb <= MEM_HAZARD;
+	end else begin
 		forwardb <= NO_HAZARD;
 	end
 end
