@@ -7,8 +7,6 @@ output reg hlt;       	// Halt signal
 output reg [15:0] pc; 	// Program counter
 
 //** DEFINE GLOBAL VARS **//
-localparam HLT 		= 4'b1111;
-
 localparam Z = 0;	// Index for Zero flag
 localparam V = 1;	// Index for Overflow flag
 localparam N = 2;	// Index for Sign flag
@@ -122,6 +120,7 @@ alu alu_inst(
 
 // HAZARD DETECTION UNIT
 HDU hdu(
+	.opcode(DATA_IF_ID[IF_ID_INST][15:12]),
 	.if_id_rs(DATA_IF_ID[IF_ID_INST][7:4]), 
 	.if_id_rt(DATA_IF_ID[IF_ID_INST][3:0]), 
 	.id_ex_rt(DATA_ID_EX[ID_EX_INST][11:8]), 
@@ -232,7 +231,7 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
 		DATA_MEM_WB[MEM_WB_INST] <= DATA_EX_MEM[EX_MEM_INST];
 
-		hlt <= CTRL_MEM_WB[Halt];
+		hlt 			 <= CTRL_MEM_WB[Halt];
 	end
 end
 
