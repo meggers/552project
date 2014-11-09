@@ -197,7 +197,9 @@ always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		pc <= 16'h0000;
 	end else begin
-		pc <= (branch & CTRL_EX_MEM[Branch]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr;
+		pc <= pc_write ? 
+			((branch & CTRL_EX_MEM[Branch]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr) :
+			pc;
 	end
 end
 
@@ -210,7 +212,7 @@ always @(posedge clk or negedge rst_n) begin
 
 		hlt	    <= 1'b0;
 	end else begin
-		CTRL_ID_EX  <= stall ? 7'b0000000 : ctrl_signals;
+		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 7'b0000000 : ctrl_signals;
 		CTRL_EX_MEM <= CTRL_ID_EX[Branch:Halt];
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 
