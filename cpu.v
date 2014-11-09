@@ -89,8 +89,8 @@ DM  data_mem(
 // REGISTER FILE
 rf  reg_file(
 	.clk(clk),
-	.p0_addr(DATA_IF_ID[IF_ID_INST][11:8]), 
-	.p1_addr(DATA_IF_ID[IF_ID_INST][7:4]), 
+	.p0_addr(DATA_IF_ID[IF_ID_INST][7:4]), 
+	.p1_addr(DATA_IF_ID[IF_ID_INST][3:0]), 
 	.p0(read_1), 
 	.p1(read_2),
 	.re0(read_signals[0]), 
