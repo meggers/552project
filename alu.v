@@ -1,8 +1,8 @@
-module alu(ALUop, src0, src1, offset, result, flags);
+module alu(ALUop, src0, src1, imm, result, flags);
 // ADD, PADDSB, SUB, AND, NOR, SLL, SRL, SRA
 
-input [15:0] src0, src1;
-input [3:0] ALUop, offset;
+input [15:0] src0, src1, imm;
+input [3:0] ALUop;
 output reg [15:0] result;
 output reg [2:0] flags; 
 
@@ -110,19 +110,32 @@ always@(*) begin
         ov = 1'b0;
         zr = shift_zr;
         neg = 1'b0; 
-    end else if(ALUop == LW || ALUop == SW) begin
-        result = {{12{offset[3]}}, offset[3:0]};
+    end else if(ALUop == LW) begin
+        result = imm + src0;
+        ov = 1'b0;
+        zr = 1'b0;
+        neg = 1'b0;
+    end else if (ALUop == SW) begin
+        result = imm + src0;
         ov = 1'b0;
         zr = 1'b0;
         neg = 1'b0;
     end else if (ALUop == LHB) begin
-        result = {offset, src0[7:0]};
+        result = {imm[7:0], src0[7:0]};
+        ov = 1'b0;
+        zr = 1'b0;
+        neg = 1'b0;
     end else if (ALUop == LLB) begin
-	result = {{8{offset[7]}}, offset};
+	result = imm;
+        ov = 1'b0;
+        zr = 1'b0;
+        neg = 1'b0;
     end else begin
 	result = 16'h0000;
-    end
-        
+        ov = 1'b0;
+        zr = 1'b0;
+        neg = 1'b0;
+    end   
 end          
 
 endmodule

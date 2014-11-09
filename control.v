@@ -1,7 +1,10 @@
-module Control(instr, ctrl_signals, read_signals);
+module Control(instr, rd, rs, rt, imm, opcode, cond, ctrl_signals, read_signals);
 
-input [3:0] instr;
+input [15:0] instr;
+output reg [15:0] imm;
 output reg [6:0] ctrl_signals;
+output reg [3:0] rd, rs, rt, opcode;
+output reg [2:0] cond;
 output reg [1:0] read_signals;
 
 localparam ADD 		= 4'b0000;
@@ -21,6 +24,9 @@ localparam JAL 		= 4'b1101;
 localparam JR 		= 4'b1110;
 localparam HLT 		= 4'b1111;
 
+localparam r0		= 4'b0000;
+localparam clear_imm	= 16'h0000;
+
 localparam Halt         = 0;
 localparam RegWrite     = 1;
 localparam MemToReg     = 2;
@@ -36,7 +42,9 @@ localparam ASSERT 	= 1'b1;
 localparam NO_ASSERT	= 1'b0;
 
 always@(*) begin
-	case (instr)
+	opcode = instr[15:12];
+	cond   = instr[11:8];
+	case (instr[15:12])
 		ADD : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
 			ctrl_signals[RegWrite] 	= ASSERT;
@@ -48,6 +56,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = instr[3:0];
+
+			imm = clear_imm;
 			end
 		PADDSB : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -60,6 +74,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = instr[3:0];
+
+			imm = clear_imm;
 			end
 		SUB : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -72,6 +92,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = instr[3:0];
+
+			imm = clear_imm;
 			end
 		AND : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -84,6 +110,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = instr[3:0];
+
+			imm = clear_imm;
 			end
 		NOR : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -96,6 +128,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = instr[3:0];
+
+			imm = clear_imm;
 			end
 		SLL : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -108,6 +146,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = r0;
+
+			imm = {12'h000, instr[3:0]};
 			end
 		SRL : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -120,6 +164,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = r0;
+
+			imm = {12'h000, instr[3:0]};
 			end
 		SRA : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -132,6 +182,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = r0;
+
+			imm = {12'h000, instr[3:0]};
 			end
 		LW : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -142,8 +198,14 @@ always@(*) begin
 			ctrl_signals[Branch] 	= NO_ASSERT;
 			ctrl_signals[ALUSrc] 	= ASSERT;
 
-			read_signals[re0]	= NO_ASSERT;
-			read_signals[re1]	= ASSERT;
+			read_signals[re0]	= ASSERT;
+			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[7:4];
+			rt = r0;
+
+			imm = {{12{instr[3]}}, {instr[3:0]}};
 			end
 		SW : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -156,6 +218,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
+
+			rd = r0;
+			rs = instr[7:4];
+			rt = instr[11:8];
+
+			imm = {{12{instr[3]}}, {instr[3:0]}};
 			end
 		LHB : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -168,6 +236,12 @@ always@(*) begin
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = instr[11:8];
+			rt = r0;
+
+			imm = {8'h00, instr[7:0]};
 			end
 		LLB : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -180,6 +254,12 @@ always@(*) begin
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = instr[11:8];
+			rs = r0;
+			rt = r0;
+
+			imm = {{8{instr[7]}}, {instr[7:0]}};
 			end
 		B : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -192,6 +272,12 @@ always@(*) begin
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = r0;
+			rs = r0;
+			rt = r0;
+
+			imm = {{6{instr[8]}}, {instr[8:0]}};
 			end
 		JAL : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -204,6 +290,12 @@ always@(*) begin
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = 4'd15;
+			rs = r0;
+			rt = r0;
+
+			imm = {{4{instr[11]}}, {instr[11:0]}};
 			end
 		JR : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -214,8 +306,14 @@ always@(*) begin
 			ctrl_signals[Branch] 	= ASSERT;
 			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
-			read_signals[re0]	= NO_ASSERT;
-			read_signals[re1]	= ASSERT;
+			read_signals[re0]	= ASSERT;
+			read_signals[re1]	= NO_ASSERT;
+
+			rd = r0;
+			rs = instr[7:4];
+			rt = r0;
+
+			imm = clear_imm;
 			end
 		HLT : begin
 			ctrl_signals[Halt] 	= ASSERT;
@@ -228,10 +326,22 @@ always@(*) begin
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
+
+			rd = r0;
+			rs = r0;
+			rt = r0;
+
+			imm = clear_imm;
 			end
 		default : begin
 			ctrl_signals = 0;
 			read_signals = 0;
+
+			rd = 0;
+			rs = 0;
+			rt = 0;
+
+			imm = 0;
 			end
 	endcase
 end

@@ -1,20 +1,28 @@
 module cpu_tb();
 
 wire [15:0] pc;
-reg clk = 0;
-reg rst_n = 0;
+wire hlt;
+reg clk, rst_n;
 
-//////////////////////
-// Instantiate CPU //
-////////////////////
 cpu iCPU(.clk(clk), .rst_n(rst_n), .hlt(hlt), .pc(pc));
   
 always #5 clk = ~clk;
 
 initial begin
-    $dumpfile("test.vcd");
-    $dumpvars(0,cpu_tb);
-	#25;
-  $finish;
+	clk = 1'b0;
+	rst_n = 1'b1;
+	#1 rst_n = 1'b0;
+	#5 rst_n = 1'b1;
+end
+
+initial begin
+	$dumpfile("test.vcd");
+	$dumpvars(0, cpu_tb);
 end 
+
+initial begin
+	#100;
+	$finish;
+end
+
 endmodule

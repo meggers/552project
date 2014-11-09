@@ -3,3 +3,6 @@ bin/*
 *~
 
 *.out
+
+WISC-F14
+test.vcd

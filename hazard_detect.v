@@ -16,15 +16,15 @@ assign stall = detected;
 
 always @(*) begin
 	if (opcode == HLT) begin
-		detected <= DETECTED;
+		detected = DETECTED;
 	end else if (id_ex_mr) begin
 		if (id_ex_rt == if_id_rs || id_ex_rt == if_id_rt) begin
-			detected <= DETECTED;
+			detected = DETECTED;
 		end else begin
-			detected <= NOT_DETECTED;
+			detected = NOT_DETECTED;
 		end
 	end else begin
-		detected <= NOT_DETECTED;
+		detected = NOT_DETECTED;
 	end
 end
 
