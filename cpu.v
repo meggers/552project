@@ -150,9 +150,9 @@ Branch branch_logic(
 );
 
 //** CONTINUOUS ASSIGNS **//
-assign pc_incr = pc + 4;										// INCREMENT PC
+assign pc_incr    = pc + 4;										// INCREMENT PC
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT];		// WHAT DATA IS RETURNED FROM MEM STAGE
-assign id_ex_b = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];     // IS OP 2 IMM
+assign id_ex_b    = CTRL_ID_EX[ALUSrc] ? {8'h00, DATA_ID_EX[ID_EX_INST][7:0]} : DATA_ID_EX[ID_EX_OP1];  // IS OP 2 IMM
 
 // FORWARDING FOR ALU OP 1
 assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :

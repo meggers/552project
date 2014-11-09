@@ -1,2 +1,2 @@
 #!/bin/bash
-iverilog -o WISC-F14.out -c file_list.txt
+iverilog -o WISC-F14 -c file_list.txt

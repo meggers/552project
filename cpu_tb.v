@@ -1,31 +1,20 @@
 module cpu_tb();
 
-reg clk,rst_n;
-
 wire [15:0] pc;
+reg clk = 0;
+reg rst_n = 0;
 
 //////////////////////
 // Instantiate CPU //
 ////////////////////
 cpu iCPU(.clk(clk), .rst_n(rst_n), .hlt(hlt), .pc(pc));
+  
+always #5 clk = ~clk;
 
 initial begin
-  clk = 0;
-  $display("rst assert\n");
-  rst_n = 0;
-  @(posedge clk);
-  @(negedge clk);
-  rst_n = 1;
-  $display("rst deassert\n");
+    $dumpfile("test.vcd");
+    $dumpvars(0,cpu_tb);
+	#25;
+  $finish;
 end 
-  
-always
-  #1 clk = ~clk;
-  
-initial begin
-  @(posedge hlt);
-  @(posedge clk);
-  $stop();
-end  
-
 endmodule
