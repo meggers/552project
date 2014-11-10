@@ -11,17 +11,17 @@ always @(*) begin
 	sum2 = in1[15:8] + in2[15:8];
 
 	if (~in1[15] && ~in2[15] && sum2[7]) begin
-		out[15:8] = 8'h80;
-	end else if (in1[15] && in2[15] && ~sum2[7]) begin
 		out[15:8] = 8'h7F;
+	end else if (in1[15] && in2[15] && ~sum2[7]) begin
+		out[15:8] = 8'h80;
 	end else begin
 		out[15:8] = sum2;
 	end
 
 	if (~in1[7] && ~in2[7] && sum1[7]) begin
-		out[7:0] = 8'h80;
-	end if (in1[7] && in2[7] && ~sum1[7]) begin
         	out[7:0] = 8'h7F;
+	end else if (in1[7] && in2[7] && ~sum1[7]) begin
+		out[7:0] = 8'h80;
     	end else begin
 		out[7:0] = sum1;
 	end
