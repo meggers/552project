@@ -18,6 +18,7 @@ localparam LW     = 4'b1000;
 localparam SW     = 4'b1001;
 localparam LHB    = 4'b1010;
 localparam LLB    = 4'b1011;
+localparam JAL    = 4'b1101;
 
 localparam Z = 0;	// Index for Zero flag
 localparam V = 1;	// Index for Overflow flag
@@ -148,6 +149,11 @@ always@(*) begin
         ov  = flag_reg[V];
         zr  = flag_reg[Z];
         neg = flag_reg[N];
+    end else if (ALUop == JAL) begin
+	result = src1;
+	ov  = flag_reg[V];
+	zr  = flag_reg[Z];
+	neg = flag_reg[N];
     end else begin
 	result = 16'h0000;
         ov  = flag_reg[V];

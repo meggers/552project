@@ -2,7 +2,7 @@ module Control(instr, rd, rs, rt, imm, opcode, cond, ctrl_signals, read_signals)
 
 input [15:0] instr;
 output reg [15:0] imm;
-output reg [5:0] ctrl_signals;
+output reg [7:0] ctrl_signals;
 output reg [3:0] rd, rs, rt, opcode;
 output reg [2:0] cond;
 output reg [1:0] read_signals;
@@ -21,18 +21,22 @@ localparam LHB 		= 4'b1010;
 localparam LLB 		= 4'b1011;
 localparam B 		= 4'b1100;
 localparam JAL 		= 4'b1101;
-localparam JR 		= 4'b1110;
+localparam JRe 		= 4'b1110;
 localparam HLT 		= 4'b1111;
 
 localparam r0		= 4'b0000;
 localparam clear_imm	= 16'h0000;
+
+localparam UNCOND_J     = 3'b111;
 
 localparam Halt         = 0;
 localparam RegWrite     = 1;
 localparam MemToReg     = 2;
 localparam MemWrite     = 3;
 localparam MemRead      = 4;
-localparam Branch       = 5;
+localparam Jal          = 5;
+localparam JR           = 6;
+localparam Branch       = 7;
 
 localparam re0      	= 0;
 localparam re1      	= 1;
@@ -42,7 +46,6 @@ localparam NO_ASSERT	= 1'b0;
 
 always@(*) begin
 	opcode = instr[15:12];
-	cond   = instr[11:9];
 	case (instr[15:12])
 		ADD : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -50,6 +53,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -59,6 +64,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[3:0];
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		PADDSB : begin
@@ -67,6 +73,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -76,6 +84,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[3:0];
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		SUB : begin
@@ -84,6 +93,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -92,6 +103,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[3:0];
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		AND : begin
@@ -100,6 +112,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -109,6 +123,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[3:0];
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		NOR : begin
@@ -117,6 +132,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -126,6 +143,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[3:0];
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		SLL : begin
@@ -134,6 +152,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -143,6 +163,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {12'h000, instr[3:0]};
 			end
 		SRL : begin
@@ -151,6 +172,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -160,6 +183,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {12'h000, instr[3:0]};
 			end
 		SRA : begin
@@ -168,6 +192,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -177,6 +203,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {12'h000, instr[3:0]};
 			end
 		LW : begin
@@ -185,6 +212,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -194,6 +223,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {{12{instr[3]}}, {instr[3:0]}};
 			end
 		SW : begin
@@ -202,6 +232,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -211,6 +243,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = instr[11:8];
 
+			cond = instr[11:9];
 			imm = {{12{instr[3]}}, {instr[3:0]}};
 			end
 		LHB : begin
@@ -219,6 +252,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -228,6 +263,7 @@ always@(*) begin
 			rs = instr[11:8];
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {8'h00, instr[7:0]};
 			end
 		LLB : begin
@@ -236,6 +272,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
@@ -245,6 +283,7 @@ always@(*) begin
 			rs = r0;
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {{8{instr[7]}}, {instr[7:0]}};
 			end
 		B : begin
@@ -253,6 +292,8 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
 			ctrl_signals[Branch] 	= ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
@@ -262,6 +303,7 @@ always@(*) begin
 			rs = r0;
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = {{7{instr[8]}}, {instr[8:0]}};
 			end
 		JAL : begin
@@ -270,23 +312,28 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
-			ctrl_signals[Branch] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= ASSERT;
+			ctrl_signals[JR]        = NO_ASSERT;
+			ctrl_signals[Branch] 	= ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
 
-			rd = 4'd15;
+			rd = 4'b1111; // REG 15
 			rs = r0;
 			rt = r0;
 
+			cond = UNCOND_J;
 			imm = {{4{instr[11]}}, {instr[11:0]}};
 			end
-		JR : begin
+		JRe : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
 			ctrl_signals[RegWrite] 	= NO_ASSERT;
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]        = ASSERT;
 			ctrl_signals[Branch] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
@@ -296,6 +343,7 @@ always@(*) begin
 			rs = instr[7:4];
 			rt = r0;
 
+			cond = UNCOND_J;
 			imm = clear_imm;
 			end
 		HLT : begin
@@ -304,6 +352,7 @@ always@(*) begin
 			ctrl_signals[MemToReg] 	= NO_ASSERT;
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
+			ctrl_signals[Jal]	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
@@ -313,6 +362,7 @@ always@(*) begin
 			rs = r0;
 			rt = r0;
 
+			cond = instr[11:9];
 			imm = clear_imm;
 			end
 		default : begin
