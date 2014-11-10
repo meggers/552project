@@ -80,7 +80,7 @@ norv norALUE(
 wire shift_zr;
 shifter shift(
     .src (src0),
-    .shamt (src1[3:0]),
+    .shamt (imm[3:0]),
     .out (shift_out),
     .dir (ALUop[1:0]),
     .zr (shift_zr)

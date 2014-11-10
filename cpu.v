@@ -20,8 +20,7 @@ localparam RegWrite    = 1;
 localparam MemToReg    = 2;
 localparam MemWrite    = 3;
 localparam MemRead     = 4;
-localparam ALUSrc      = 5;
-localparam Branch      = 6;
+localparam Branch      = 5;
 
 localparam IF_ID_PC    = 0;
 localparam IF_ID_INST  = 1;
@@ -40,7 +39,7 @@ localparam MEM_WB_RSLT = 1;
 
 //** DEFINE REGISTERS **//
 // Control Pipeline Registers
-reg [5:0] CTRL_ID_EX;
+reg [4:0] CTRL_ID_EX;
 reg [4:0] CTRL_EX_MEM;
 reg [2:0] CTRL_MEM_WB;
 
@@ -61,10 +60,10 @@ reg [2:0]  FLAG;
 //** DEFINE WIRES **//
 wire [15:0] pc_incr, instr, read_1, 
 	    read_2, dm_read, op_1, op_2,
-	    result, write_data, id_ex_b,
+	    result, write_data,
 	    IF_ID_Imm, pc_branch;
 
-wire [6:0] ctrl_signals;
+wire [5:0] ctrl_signals;
 
 wire [3:0] IF_ID_Rd, 
 	   IF_ID_Rs,
@@ -180,7 +179,6 @@ DM  data_mem(
 assign pc_incr    = pc + 1;								       // INCREMENT PC
 assign pc_branch  = DATA_IF_ID[IF_ID_PC] + IF_ID_Imm;				       	       // CALCULATED BRANCH ADDRESS
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT]; // WHAT DATA IS RETURNED FROM MEM STAGE
-assign id_ex_b    = CTRL_ID_EX[ALUSrc] ? IMM_ID_EX : DATA_ID_EX[ID_EX_OP2];                    // IS OP 2 IMM
 
 // FORWARDING FOR ALU OP 1
 assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
@@ -188,9 +186,9 @@ assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
 	      (forwardA == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP1];
 
 // FORWARDING FOR ALU OP 2
-assign op_2 = (forwardB == SRC_ID_EX)  ? id_ex_b : 
+assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP2] : 
 	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
-	      (forwardB == SRC_MEM_WB) ? write_data : id_ex_b;
+	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP2];
 
 //** PROGRAM COUNTER **//
 always @(posedge clk or negedge rst_n) begin 
@@ -214,8 +212,8 @@ always @(posedge clk or negedge rst_n) begin
 
 		hlt	    <= 1'b0;
 	end else begin
-		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 6'b000000 : ctrl_signals[ALUSrc:Halt];
-		CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
+		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 5'b00000 : ctrl_signals[MemRead:Halt];
+		CTRL_EX_MEM <= CTRL_ID_EX;
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 
 		hlt 	    <= CTRL_MEM_WB[Halt];

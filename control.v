@@ -2,7 +2,7 @@ module Control(instr, rd, rs, rt, imm, opcode, cond, ctrl_signals, read_signals)
 
 input [15:0] instr;
 output reg [15:0] imm;
-output reg [6:0] ctrl_signals;
+output reg [5:0] ctrl_signals;
 output reg [3:0] rd, rs, rt, opcode;
 output reg [2:0] cond;
 output reg [1:0] read_signals;
@@ -32,8 +32,7 @@ localparam RegWrite     = 1;
 localparam MemToReg     = 2;
 localparam MemWrite     = 3;
 localparam MemRead      = 4;
-localparam ALUSrc       = 5;
-localparam Branch       = 6;
+localparam Branch       = 5;
 
 localparam re0      	= 0;
 localparam re1      	= 1;
@@ -52,7 +51,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -70,7 +68,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -88,8 +85,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
-
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
 
@@ -106,7 +101,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -124,7 +118,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -142,7 +135,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -160,7 +152,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -178,7 +169,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -196,7 +186,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -214,7 +203,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= ASSERT;
@@ -232,7 +220,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -250,7 +237,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -268,7 +254,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -286,7 +271,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -304,7 +288,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= ASSERT;
 			read_signals[re1]	= NO_ASSERT;
@@ -322,7 +305,6 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
-			ctrl_signals[ALUSrc] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
 			read_signals[re1]	= NO_ASSERT;
