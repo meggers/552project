@@ -10,12 +10,12 @@ assign diff = in1 - in2;
 
 always @(*) begin
 	if (in1[15] & ~in2[15] & ~diff[15]) begin
-		out = 16'h7FFF;
+		out = 16'h8000;
 		ov  = 1'b1;
 		neg = 1'b0;
 		zr  = 1'b0;
 	end else if (~in1[15] & in2[15] & diff[15]) begin
-		out = 16'h8000;
+		out = 16'h7FFF;
 		ov  = 1'b1;
 		neg = 1'b1;
 		zr  = 1'b0;
