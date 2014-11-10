@@ -28,7 +28,7 @@ always @ (*) begin
 	flags = {neg, ov, zr};
 end
 
-wire [15:0] add_out, sub_out, shift_out;
+wire [15:0] add_out, sub_out;
 wire add_zr, add_ng, add_ov,
      sub_zr, sub_ng, sub_ov;
 
@@ -77,6 +77,7 @@ norv norALUE(
     .zr (nor_zr)
 );
 
+wire [15:0] shift_out;
 wire shift_zr;
 shifter shift(
     .src (src0),

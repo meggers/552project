@@ -21,7 +21,7 @@ initial begin
 end 
 
 initial begin
-	#2000;
+	#7500;
 	$finish;
 end
 
