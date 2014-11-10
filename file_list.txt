@@ -1,4 +1,5 @@
 adder.v
+subv.v
 shifter.v
 norv.v
 paddsb.v

@@ -4,15 +4,12 @@ input[15:0] in1, in2;
 output reg[15:0] out;
 output reg zr;
 
-always@(*) begin
-out = in1 & in2;
-if(out == 16'h0000) begin
-    zr = 1;
-end
-else begin
-    zr = 0;
+wire [15:0] andv;
+
+assign andv = in1 & in2;
+always @(*) begin
+	out = andv;
+	zr = ~|andv;
 end
 
-end
 endmodule
-

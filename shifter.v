@@ -3,8 +3,6 @@ module shifter(src, shamt, out, dir, zr);
 // Appears to work, again haven't looked at output file closely. Again,
 // probably not very small. or fast. 
 
-
-
 input[15:0] src;
 input [3:0] shamt;
 input[1:0] dir;
@@ -14,13 +12,6 @@ reg [15:0] inter0;
 reg [15:0] inter1;
 reg [15:0] inter2;
 reg [15:0] inter3;
-
-/*
-localparam logicalleft = 1;
-localparam logicalright = 2;
-localparam arithright = 3;
-localparam logical = 0;
-*/
 
 always @(*) begin
 	if(dir == 2'd1) begin
@@ -113,33 +104,3 @@ always @(*) begin
 end
 
 endmodule
-/*
-module t_shifter();
-
-wire [15:0] out;
-reg [15:0] src;
-reg [3:0] shamt;
-reg [1:0]dir;
-integer i=0;
-
-
-shifter dut(.src(src), .out(out), .shamt(shamt), .dir(dir));
-
-
-
-initial begin
-	while (i < 10000) begin
-
-	#5
-	src = $random;
-	shamt = $random;
-	dir = $random;
-
-	#1
-	$display("%h << %d = %h, dir = %b", src, shamt, out, dir);
-	i = i + 1;
-	end
-	$finish;
-end
-endmodule
-*/

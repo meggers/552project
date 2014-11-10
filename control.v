@@ -32,8 +32,8 @@ localparam RegWrite     = 1;
 localparam MemToReg     = 2;
 localparam MemWrite     = 3;
 localparam MemRead      = 4;
-localparam Branch       = 5;
-localparam ALUSrc       = 6;
+localparam ALUSrc       = 5;
+localparam Branch       = 6;
 
 localparam re0      	= 0;
 localparam re1      	= 1;
@@ -43,7 +43,7 @@ localparam NO_ASSERT	= 1'b0;
 
 always@(*) begin
 	opcode = instr[15:12];
-	cond   = instr[11:8];
+	cond   = instr[11:9];
 	case (instr[15:12])
 		ADD : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;
@@ -277,7 +277,7 @@ always@(*) begin
 			rs = r0;
 			rt = r0;
 
-			imm = {{6{instr[8]}}, {instr[8:0]}};
+			imm = {{7{instr[8]}}, {instr[8:0]}};
 			end
 		JAL : begin
 			ctrl_signals[Halt] 	= NO_ASSERT;

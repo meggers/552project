@@ -20,30 +20,28 @@ localparam RegWrite    = 1;
 localparam MemToReg    = 2;
 localparam MemWrite    = 3;
 localparam MemRead     = 4;
-localparam Branch      = 5;
-localparam ALUSrc      = 6;
+localparam ALUSrc      = 5;
+localparam Branch      = 6;
 
 localparam IF_ID_PC    = 0;
 localparam IF_ID_INST  = 1;
 
-localparam ID_EX_PC    = 0;
-localparam ID_EX_OP1   = 1;
-localparam ID_EX_OP2   = 2;
+localparam ID_EX_OP1   = 0;
+localparam ID_EX_OP2   = 1;
 localparam ID_EX_Rd    = 0;
 localparam ID_EX_Rs    = 1;
 localparam ID_EX_Rt    = 2;
 
-localparam EX_MEM_PC   = 0;
-localparam EX_MEM_RSLT = 1;
-localparam EX_MEM_OP2  = 2;
+localparam EX_MEM_RSLT = 0;
+localparam EX_MEM_OP2  = 1;
 
 localparam MEM_WB_RD   = 0;
 localparam MEM_WB_RSLT = 1;
 
 //** DEFINE REGISTERS **//
 // Control Pipeline Registers
-reg [6:0] CTRL_ID_EX;
-reg [5:0] CTRL_EX_MEM;
+reg [5:0] CTRL_ID_EX;
+reg [4:0] CTRL_EX_MEM;
 reg [2:0] CTRL_MEM_WB;
 
 // Data Pipeline Registers
@@ -54,18 +52,17 @@ reg [15:0] DATA_MEM_WB [1:0];
 
 // Accessory Pipeline Registers
 reg [15:0] IMM_ID_EX;
-reg [2:0] COND_ID_EX;
-reg [3:0] REG_ID_EX [2:0];
-reg [3:0] REG_EX_MEM_Rd, 
-	  REG_MEM_WB_Rd,
-	  OPCODE_ID_EX;
-reg [2:0] FLAG;
+reg [3:0]  REG_ID_EX [2:0];
+reg [3:0]  REG_EX_MEM_Rd, 
+	   REG_MEM_WB_Rd,
+	   OPCODE_ID_EX;
+reg [2:0]  FLAG;
 
 //** DEFINE WIRES **//
 wire [15:0] pc_incr, instr, read_1, 
 	    read_2, dm_read, op_1, op_2,
 	    result, write_data, id_ex_b,
-	    IF_ID_Imm;
+	    IF_ID_Imm, pc_branch;
 
 wire [6:0] ctrl_signals;
 
@@ -140,6 +137,7 @@ alu alu_inst(
 	.src0(op_1), 
 	.src1(op_2), 
 	.imm(IMM_ID_EX),
+	.flag_reg(FLAG),
 
 	.result(result), 
 	.flags(flags)
@@ -160,8 +158,9 @@ FU forward_unit(
 
 // BRANCH CONDITION
 Branch branch_logic(
-	.condition(COND_ID_EX), 
-	.flags(FLAG), 
+	.ctrl(ctrl_signals[Branch]),
+	.condition(IF_ID_Cond), 
+	.flags(flags), 
 
 	.branch(branch)
 );
@@ -179,8 +178,9 @@ DM  data_mem(
 
 //** CONTINUOUS ASSIGNS **//
 assign pc_incr    = pc + 1;								       // INCREMENT PC
+assign pc_branch  = DATA_IF_ID[IF_ID_PC] + IF_ID_Imm;				       	       // CALCULATED BRANCH ADDRESS
 assign write_data = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT]; // WHAT DATA IS RETURNED FROM MEM STAGE
-assign id_ex_b    = CTRL_ID_EX[ALUSrc] ? IMM_ID_EX : DATA_ID_EX[ID_EX_OP1];                    // IS OP 2 IMM
+assign id_ex_b    = CTRL_ID_EX[ALUSrc] ? IMM_ID_EX : DATA_ID_EX[ID_EX_OP2];                    // IS OP 2 IMM
 
 // FORWARDING FOR ALU OP 1
 assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
@@ -197,9 +197,11 @@ always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		pc <= 16'h0000;
 	end else begin
-		pc <= pc_write ? 
-			((branch & CTRL_EX_MEM[Branch]) ? DATA_EX_MEM[EX_MEM_PC] : pc_incr) :
-			pc;
+		if (pc_write) begin
+			pc <= (branch ? pc_branch : pc_incr);
+		end else begin
+			pc <= pc;
+		end
 	end
 end
 
@@ -212,8 +214,8 @@ always @(posedge clk or negedge rst_n) begin
 
 		hlt	    <= 1'b0;
 	end else begin
-		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 7'b0000000 : ctrl_signals;
-		CTRL_EX_MEM <= CTRL_ID_EX[Branch:Halt];
+		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 6'b000000 : ctrl_signals[ALUSrc:Halt];
+		CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 
 		hlt 	    <= CTRL_MEM_WB[Halt];
@@ -228,17 +230,14 @@ always @(posedge clk or negedge rst_n) begin
 
 		DATA_ID_EX[0] <= 16'h0000;
 		DATA_ID_EX[1] <= 16'h0000;
-		DATA_ID_EX[2] <= 16'h0000;
 		REG_ID_EX[0]  <= 4'h0;
 		REG_ID_EX[1]  <= 4'h0;
 		REG_ID_EX[2]  <= 4'h0;
 		OPCODE_ID_EX  <= 4'h0;
-		IMM_ID_EX     <= 16'h0000; 
-		COND_ID_EX    <= 3'b000;
+		IMM_ID_EX     <= 16'h0000;
 
 		DATA_EX_MEM[0] <= 16'h0000;
 		DATA_EX_MEM[1] <= 16'h0000;
-		DATA_EX_MEM[2] <= 16'h0000;
 		REG_EX_MEM_Rd  <= 4'h0;
 		FLAG           <= 3'b000;
 
@@ -246,7 +245,10 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_MEM_WB[1] <= 16'h0000;
 		REG_MEM_WB_Rd  <= 4'h0;
 	end else begin
-		if (if_id_write) begin
+		if (branch) begin
+			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
+			DATA_IF_ID[IF_ID_INST] <= 16'h0000;
+		end else if (if_id_write) begin
 			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
 			DATA_IF_ID[IF_ID_INST] <= instr;
 		end else begin
@@ -254,17 +256,14 @@ always @(posedge clk or negedge rst_n) begin
 			DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
 		end
 
-		DATA_ID_EX[ID_EX_PC]     <= DATA_IF_ID[IF_ID_PC];
 		DATA_ID_EX[ID_EX_OP1]    <= read_1;
 		DATA_ID_EX[ID_EX_OP2]    <= read_2;
 		REG_ID_EX[ID_EX_Rd]	 <= IF_ID_Rd;
 		REG_ID_EX[ID_EX_Rs]	 <= IF_ID_Rs;
 		REG_ID_EX[ID_EX_Rt]	 <= IF_ID_Rt;
 		OPCODE_ID_EX		 <= IF_ID_Opcode;
-		IMM_ID_EX		 <= IF_ID_Imm; 
-		COND_ID_EX		 <= IF_ID_Cond;
+		IMM_ID_EX		 <= IF_ID_Imm;
 
-		DATA_EX_MEM[EX_MEM_PC]   <= DATA_ID_EX[ID_EX_PC] + IMM_ID_EX;
 		DATA_EX_MEM[EX_MEM_RSLT] <= result;
 		DATA_EX_MEM[EX_MEM_OP2]  <= op_2;
 		REG_EX_MEM_Rd		 <= REG_ID_EX[ID_EX_Rd];
@@ -278,9 +277,10 @@ end
 
 endmodule
 
-module Branch(condition, flags, branch);
+module Branch(ctrl, condition, flags, branch);
 
 input [2:0] condition, flags;
+input ctrl;
 output reg branch;
 
 localparam NOT_EQUAL			= 3'b000;
@@ -300,26 +300,30 @@ localparam V = 1;	// Index for Overflow flag
 localparam N = 2;	// Index for Sign flag
 
 always @(*) begin
-	case (condition)
-		NOT_EQUAL : 
-			branch = ~flags[Z] ? BRANCH : NO_BRANCH;
-		EQUAL : 
-			branch = flags[Z] ? BRANCH : NO_BRANCH;
-		GREATER_THAN : 
-			branch = ~(flags[Z] | flags[N]) ? BRANCH : NO_BRANCH;
-		LESS_THAN : 
-			branch = flags[N] ? BRANCH : NO_BRANCH;
-		GREATER_THAN_OR_EQUAL : 
-			branch = (flags[Z] | ~flags[N]) ? BRANCH : NO_BRANCH;
-		LESS_THAN_OR_EQUAL : 
-			branch = (flags[N] | flags[Z]) ? BRANCH : NO_BRANCH;
-		OVERFLOW : 
-			branch = flags[V] ? BRANCH : NO_BRANCH;
-		UNCONDITIONAL : 
-			branch = BRANCH;
-		default : 
-			branch = NO_BRANCH;
-	endcase
+	if (ctrl) begin
+		case (condition)
+			NOT_EQUAL : 
+				branch = ~flags[Z] ? BRANCH : NO_BRANCH;
+			EQUAL : 
+				branch = flags[Z] ? BRANCH : NO_BRANCH;
+			GREATER_THAN : 
+				branch = ~(flags[Z] | flags[N]) ? BRANCH : NO_BRANCH;
+			LESS_THAN : 
+				branch = flags[N] ? BRANCH : NO_BRANCH;
+			GREATER_THAN_OR_EQUAL : 
+				branch = (flags[Z] | ~flags[N]) ? BRANCH : NO_BRANCH;
+			LESS_THAN_OR_EQUAL : 
+				branch = (flags[N] | flags[Z]) ? BRANCH : NO_BRANCH;
+			OVERFLOW : 
+				branch = flags[V] ? BRANCH : NO_BRANCH;
+			UNCONDITIONAL : 
+				branch = BRANCH;
+			default : 
+				branch = NO_BRANCH;
+		endcase
+	end else begin
+		branch = NO_BRANCH;
+	end
 end
 
 endmodule
