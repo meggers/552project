@@ -65,7 +65,7 @@ wire [15:0] pc_incr, instr, read_1,
 	    read_2, dm_read, op_1, op_2,
 	    result, write_data,
 	    IF_ID_Imm, pc_branch,
-	    DATA_ID_EX_OP2;
+	    DATA_ID_EX_OP2, jr_branch;
 
 wire [7:0] ctrl_signals;
 
@@ -79,7 +79,7 @@ wire [2:0] flags,
 
 wire [1:0] read_signals, forwardA, forwardB;
 
-wire pc_write, if_id_write, stall, branch, jal;
+wire pc_write, if_id_write, stall, branch, jal, jr_forward;
 
 //** DEFINE MODULES **//
 // INSTRUCTION MEMORY
@@ -110,7 +110,7 @@ HDU hdu(
 	.opcode(IF_ID_Opcode),
 	.if_id_rs(IF_ID_Rs), 
 	.if_id_rt(IF_ID_Rt), 
-	.id_ex_rt(REG_ID_EX[ID_EX_Rt]), 
+	.id_ex_rt(REG_ID_EX[ID_EX_Rd]), 
 	.id_ex_mr(CTRL_ID_EX[MemRead]), 
 
 	.pc_write(pc_write), 
@@ -159,6 +159,15 @@ FU forward_unit(
 	.forwardb(forwardB)
 );
 
+// JR FORWARDING
+JR_forward jr_f(
+	.ctrl_jr(ctrl_signals[JR]), 
+	.id_rs(IF_ID_Rs), 
+	.ex_rd(REG_ID_EX[ID_EX_Rd]), 
+
+	.forward(jr_forward)
+);
+
 // BRANCH CONDITION
 Branch branch_logic(
 	.ctrl(ctrl_signals[Branch]),
@@ -180,8 +189,9 @@ DM  data_mem(
 );
 
 //** CONTINUOUS ASSIGNS **//
-assign pc_incr        = pc + 1;								           // INCREMENT PC
-assign pc_branch      = ctrl_signals[JR] ? read_1 : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm;		   // CALCULATED BRANCH ADDRESS
+assign pc_incr        = pc + 1;	// INCREMENT PC
+assign jr_branch      = jr_forward ? result : read_1;				           
+assign pc_branch      = ctrl_signals[JR] ? jr_branch : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm;	   // CALCULATED BRANCH ADDRESS
 assign write_data     = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT]; // WHAT DATA IS RETURNED FROM MEM STAGE
 assign DATA_ID_EX_OP2 = CTRL_ID_EX[Jal] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2];            // PASS THROUGH JAL ADDRESS IF JAL
 
