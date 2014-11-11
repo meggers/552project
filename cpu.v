@@ -231,7 +231,7 @@ always @(posedge clk or negedge rst_n) begin
 		CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
 		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 
-		hlt 	    <= CTRL_MEM_WB[Halt];
+		hlt 	    <= CTRL_EX_MEM[Halt];
 	end
 end
 
