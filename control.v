@@ -48,17 +48,22 @@ always@(*) begin
 	opcode = instr[15:12];
 	case (instr[15:12])
 		ADD : begin
-			ctrl_signals[Halt] 	= NO_ASSERT;
-			ctrl_signals[RegWrite] 	= ASSERT;
-			ctrl_signals[MemToReg] 	= NO_ASSERT;
-			ctrl_signals[MemWrite] 	= NO_ASSERT;
-			ctrl_signals[MemRead] 	= NO_ASSERT;
-			ctrl_signals[Jal]	= NO_ASSERT;
-			ctrl_signals[JR]        = NO_ASSERT;
-			ctrl_signals[Branch] 	= NO_ASSERT;
+			if (|instr) begin
+				ctrl_signals[Halt] 	= NO_ASSERT;
+				ctrl_signals[RegWrite] 	= ASSERT;
+				ctrl_signals[MemToReg] 	= NO_ASSERT;
+				ctrl_signals[MemWrite] 	= NO_ASSERT;
+				ctrl_signals[MemRead] 	= NO_ASSERT;
+				ctrl_signals[Jal]	= NO_ASSERT;
+				ctrl_signals[JR]        = NO_ASSERT;
+				ctrl_signals[Branch] 	= NO_ASSERT;
 
-			read_signals[re0]	= ASSERT;
-			read_signals[re1]	= ASSERT;
+				read_signals[re0]	= ASSERT;
+				read_signals[re1]	= ASSERT;
+			end else begin
+				ctrl_signals            = 8'h00;
+				read_signals            = 2'b00;
+			end
 
 			rd = instr[11:8];
 			rs = instr[7:4];
