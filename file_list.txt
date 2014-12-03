@@ -16,3 +16,4 @@ cpu_tb.v
 cache.v
 unified_mem.v
 mem_hierarchy.v
+cache_control.v
