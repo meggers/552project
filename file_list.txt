@@ -13,3 +13,6 @@ instr_mem.v
 rf_pipelined.v
 cpu.v
 cpu_tb.v
+cache.v
+unified_mem.v
+mem_hierarchy.v
