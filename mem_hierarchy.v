@@ -1,4 +1,4 @@
-module system_memory(clk, rst_n, re, we, wrt_data, i_addr, d_addr, instr, i_rdy, d_rdy, rd_data);
+module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, i_rdy, d_rdy, rd_data);
 
 input [15:0] i_addr, d_addr, wrt_data;
 input clk, rst_n, re, we;
@@ -21,19 +21,19 @@ wire [7:0] 	i_tag,		d_tag;
 
 wire [13:0] 					m_addr;	
 
-wire [63:0] 	i_line,		d_line,		m_line, 
-	    	i_data,		d_data,		m_data;
+wire [63:0] 	i_out,		d_out,		m_out, 
+	    	i_in,		d_in,		m_in;
 
 cache Icache(
 	.clk(clk),
 	.rst_n(rst_n),
 	.addr(i_addr[15:2]),
-	.wr_data(i_data),
+	.wr_data(i_in),
 	.wdirty(i_dirty_in),
 	.we(i_we),
 	.re(i_re),
 
-	.rd_data(i_line),
+	.rd_data(i_out),
 	.tag_out(i_tag),
 	.hit(i_hit),
 	.dirty(i_dirty_out)
@@ -43,20 +43,21 @@ cache Dcache(
 	.clk(clk),
 	.rst_n(rst_n),
 	.addr(d_addr[15:2]),
-	.wr_data(m_data),
+	.wr_data(d_in),
 	.wdirty(d_dirty_in),
 	.we(d_we),
 	.re(d_re),
 
-	.rd_data(d_line),
+	.rd_data(d_out),
 	.tag_out(d_tag),
 	.hit(d_hit),
 	.dirty(d_dirty_out)
 );
 
-cache_control controller(
+cache_control cacheControl(
 	.clk(clk), 
-	.rst_n(rst_n), 
+	.rst_n(rst_n),
+	.i_fetch(i_fetch),
 	.i_hit(i_hit), 
 	.d_hit(d_hit), 
 	.d_dirty(d_dirty_out),
@@ -67,8 +68,8 @@ cache_control controller(
 	.i_addr(i_addr), 
 	.d_addr(d_addr), 
 	.wr_data(wrt_data),
-	.d_line(d_line), 
-	.m_line(m_line),
+	.d_line(d_out), 
+	.m_line(m_out),
 
 	.i_re(i_re),
 	.d_re(d_re),
@@ -80,9 +81,9 @@ cache_control controller(
 	.d_dirty_in(d_dirty_in),
 	.rdy(rdy),
 	.m_addr(m_addr),
-	.i_data(i_data),	
-	.d_data(d_data),
-	.m_data(m_data)
+	.i_data(i_in),	
+	.d_data(d_in),
+	.m_data(m_in)
 );
 
 unified_mem main_memory(
@@ -93,23 +94,23 @@ unified_mem main_memory(
 	.we(m_we),
 	.wdata(m_data),
 
-	.rd_data(m_line),
+	.rd_data(m_out),
 	.rdy(m_rdy)
 );
 
 assign instr = ~rst_n ? instr_start : (
 	i_addr[1] ? (
-		i_addr[0] ? i_line[63:48] : i_line[47:32];
+		i_addr[0] ? i_out[63:48] : i_out[47:32];
 	) : (
-		i_addr[0] ? i_line[31:16] : i_line[15:0];	
+		i_addr[0] ? i_out[31:16] : i_out[15:0];	
 	)
 );
 
 assign rd_data = ~rst_n ? data_start : (
 	d_addr[1] ? (
-		d_addr[0] ? d_line[63:48] : d_line[47:32];
+		d_addr[0] ? d_out[63:48] : d_out[47:32];
 	) : (
-		d_addr[0] ? d_line[31:16] : d_line[15:0];	
+		d_addr[0] ? d_out[31:16] : d_out[15:0];	
 	)		
 );
 
