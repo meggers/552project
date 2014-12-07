@@ -6,9 +6,6 @@ input clk, rst_n, re, we;
 output [15:0] instr, rd_data;
 output i_rdy, d_rdy;
 
-localparam instr_start 	= 16'h0000;
-localparam data_start	= 16'hB0FF;
-
 wire rdy;
 wire		i_we,		d_we,		m_we,
 		i_re,		d_re, 		m_re,
@@ -68,8 +65,9 @@ cache_control cacheControl(
 	.i_addr(i_addr), 
 	.d_addr(d_addr), 
 	.wr_data(wrt_data),
-	.d_line(d_out), 
-	.m_line(m_out),
+	.i_out(i_out),
+	.d_out(d_out), 
+	.m_out(m_out),
 
 	.i_re(i_re),
 	.d_re(d_re),
@@ -83,7 +81,9 @@ cache_control cacheControl(
 	.m_addr(m_addr),
 	.i_data(i_in),	
 	.d_data(d_in),
-	.m_data(m_in)
+	.m_data(m_in),
+	.instr(instr),
+	.rd_data(rd_data)
 );
 
 unified_mem main_memory(
@@ -96,22 +96,6 @@ unified_mem main_memory(
 
 	.rd_data(m_out),
 	.rdy(m_rdy)
-);
-
-assign instr = ~rst_n ? instr_start : (
-	i_addr[1] ? (
-		i_addr[0] ? i_out[63:48] : i_out[47:32];
-	) : (
-		i_addr[0] ? i_out[31:16] : i_out[15:0];	
-	)
-);
-
-assign rd_data = ~rst_n ? data_start : (
-	d_addr[1] ? (
-		d_addr[0] ? d_out[63:48] : d_out[47:32];
-	) : (
-		d_addr[0] ? d_out[31:16] : d_out[15:0];	
-	)		
 );
 
 endmodule
