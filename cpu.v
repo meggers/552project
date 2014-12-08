@@ -79,16 +79,23 @@ wire [2:0] flags,
 
 wire [1:0] read_signals, forwardA, forwardB;
 
-wire pc_write, if_id_write, stall, branch, jal, jr_forward;
+wire pc_write, if_id_write, stall, mem_stall, branch, jal, jr_forward;
 
 //** DEFINE MODULES **//
-// INSTRUCTION MEMORY
-IM instr_mem(
+// SYSTEM MEMORY
+system_memory memory(
 	.clk(clk),
-	.addr(pc), 
-	.rd_en(if_id_write),
+	.rst_n(rst_n),
+	.i_fetch(if_id_write),
+	.re(CTRL_EX_MEM[MemRead]),
+	.we(CTRL_EX_MEM[MemWrite]),
+	.wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
+	.i_addr(pc),
+	.d_addr(DATA_EX_MEM[EX_MEM_RSLT]),
 
-	.instr(instr)
+	.instr(instr),
+	.rd_data(dm_read),
+	.stall(mem_stall)
 );
 
 // CONTROL BLOCK
@@ -112,6 +119,7 @@ HDU hdu(
 	.if_id_rt(IF_ID_Rt), 
 	.id_ex_rt(REG_ID_EX[ID_EX_Rd]), 
 	.id_ex_mr(CTRL_ID_EX[MemRead]), 
+	.mem_stall(mem_stall),
 
 	.pc_write(pc_write), 
 	.if_id_write(if_id_write), 
@@ -175,17 +183,6 @@ Branch branch_logic(
 	.flags(flags), 
 
 	.branch(branch)
-);
-
-// DATA MEMORY
-DM  data_mem(
-	.clk(clk),
-	.addr(DATA_EX_MEM[EX_MEM_RSLT]),
-	.re(CTRL_EX_MEM[MemRead]), 
-	.we(CTRL_EX_MEM[MemWrite]),
-	.wrt_data(DATA_EX_MEM[EX_MEM_OP2]),
-
-	.rd_data(dm_read)
 );
 
 //** CONTINUOUS ASSIGNS **//

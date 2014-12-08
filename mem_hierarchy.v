@@ -1,4 +1,4 @@
-module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, d_data, stall);
+module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, rd_data, stall);
 
 input [15:0] i_addr, d_addr, wrt_data;
 input clk, rst_n, re, we;
