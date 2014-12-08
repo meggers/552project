@@ -1,15 +1,8 @@
 module cache_control(
-	clk, rst_n, re, we, i_fetch, wrt_data, stall, instr, rd_data,
-	i_hit, 		d_hit, 
-			d_dirty, 	m_rdy,
-			d_tag,
-	i_addr, 	d_addr, 	
-	i_out, 		d_out, 		m_out,
-					m_re,
-	i_we,		d_we,		m_we,
-	i_dirty_in,	d_dirty_in, 	
-					m_addr,
-	i_data,		d_data
+	clk, rst_n, re, we, i_fetch, wrt_data, ready, instr, rd_data,
+	i_hit, d_hit, d_dirty, m_rdy, d_tag, i_addr, d_addr, i_out,
+	d_out, m_out, m_re, i_we, d_we,	m_we, i_dirty_in, d_dirty_in, 	
+	m_addr, i_data,	d_data
 );
 
 //** I/O **//
@@ -19,7 +12,7 @@ input [15:0] i_addr, d_addr, wrt_data;
 input [63:0] i_out, d_out, m_out;
 
 output i_dirty_in;
-output reg m_re, i_we, d_we, m_we, d_dirty_in, stall;
+output reg m_re, i_we, d_we, m_we, d_dirty_in, ready;
 output [15:0] instr, rd_data;
 output reg [13:0] m_addr;
 output reg [63:0] i_data, d_data, m_data;
@@ -82,7 +75,7 @@ always @(*) begin
 	m_re 		= DISABLE;
 	m_addr 		= 0;
 
-	stall 		= ENABLE;
+	ready 		= DISABLE;
 
 	nextState 	= CACHE_READ;
 
@@ -122,7 +115,7 @@ always @(*) begin
 					d_we 		= ENABLE;
 				end
 
-				stall = DISABLE;
+				ready = ENABLE;
 				nextState = CACHE_READ;
 			end
 		end

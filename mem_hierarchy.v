@@ -1,10 +1,10 @@
-module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, rd_data, stall);
+module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, rd_data, ready);
 
 input [15:0] i_addr, d_addr, wrt_data;
 input clk, rst_n, re, we, i_fetch;
 
 output [15:0] instr, rd_data;
-output stall;
+output ready;
 
 wire		i_we,		d_we,		m_we,
 				 		m_re,
@@ -74,7 +74,7 @@ cache_control cacheControl(
 	.m_we(m_we),
 	.i_dirty_in(i_dirty_in),
 	.d_dirty_in(d_dirty_in),
-	.stall(stall),
+	.ready(ready),
 	.m_addr(m_addr),
 	.i_data(i_in),
 	.d_data(d_in),

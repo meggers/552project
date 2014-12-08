@@ -1,7 +1,7 @@
-module HDU(opcode, if_id_rs, if_id_rt, id_ex_rt, id_ex_mr, mem_stall, pc_write, if_id_write, stall);
+module HDU(opcode, if_id_rs, if_id_rt, id_ex_rt, id_ex_mr, pc_write, if_id_write, stall);
 
 input [3:0] opcode, if_id_rs, if_id_rt, id_ex_rt;
-input id_ex_mr, mem_stall;
+input id_ex_mr;
 output pc_write, if_id_write, stall;
 
 localparam DETECTED 	= 1'b1;
@@ -10,9 +10,9 @@ localparam HLT 		= 4'b1111;
 
 reg detected;
 
-assign pc_write = ~detected | ~mem_stall;
-assign if_id_write = ~detected | ~mem_stall;
-assign stall = detected | mem_stall;
+assign pc_write = ~detected;
+assign if_id_write = ~detected;
+assign stall = detected;
 
 always @(*) begin
 	if (opcode == HLT) begin
