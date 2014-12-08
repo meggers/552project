@@ -224,11 +224,19 @@ always @(posedge clk or negedge rst_n) begin
 
 		hlt	    <= 1'b0;
 	end else begin
-		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 6'b00000 : ctrl_signals[Jal:Halt];
-		CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
-		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
+		if (~mem_stall) begin
+			CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 6'b00000 : ctrl_signals[Jal:Halt];
+			CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
+			CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
 
-		hlt 	    <= CTRL_EX_MEM[Halt];
+			hlt 	    <= CTRL_EX_MEM[Halt];
+		end else begin
+			CTRL_ID_EX  <= CTRL_ID_EX;
+			CTRL_EX_MEM <= CTRL_EX_MEM;
+			CTRL_MEM_WB <= CTRL_MEM_WB;
+
+			hlt 	    <= hlt;
+		end
 	end
 end
 
@@ -256,34 +264,36 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_MEM_WB[1] <= 16'h0000;
 		REG_MEM_WB_Rd  <= 4'h0;
 	end else begin
-		if (branch) begin
-			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
-			DATA_IF_ID[IF_ID_INST] <= 16'h0000;
-		end else if (if_id_write) begin
-			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
-			DATA_IF_ID[IF_ID_INST] <= instr;
-		end else begin
-			DATA_IF_ID[IF_ID_PC]   <= DATA_IF_ID[IF_ID_PC];
-			DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
+		if (~mem_stall) begin
+			if (branch) begin
+				DATA_IF_ID[IF_ID_PC]   <= pc_incr;
+				DATA_IF_ID[IF_ID_INST] <= 16'h0000;
+			end else if (if_id_write) begin
+				DATA_IF_ID[IF_ID_PC]   <= pc_incr;
+				DATA_IF_ID[IF_ID_INST] <= instr;
+			end else begin
+				DATA_IF_ID[IF_ID_PC]   <= DATA_IF_ID[IF_ID_PC];
+				DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
+			end
+
+			DATA_ID_EX[ID_EX_OP1]    <= read_1;
+			DATA_ID_EX[ID_EX_OP2]    <= read_2;
+			DATA_ID_EX[ID_EX_PC]     <= DATA_IF_ID[IF_ID_PC];
+			REG_ID_EX[ID_EX_Rd]	 <= IF_ID_Rd;
+			REG_ID_EX[ID_EX_Rs]	 <= IF_ID_Rs;
+			REG_ID_EX[ID_EX_Rt]	 <= IF_ID_Rt;
+			OPCODE_ID_EX		 <= IF_ID_Opcode;
+			IMM_ID_EX		 <= IF_ID_Imm;
+
+			DATA_EX_MEM[EX_MEM_RSLT] <= result;
+			DATA_EX_MEM[EX_MEM_OP2]  <= op_2;
+			REG_EX_MEM_Rd		 <= REG_ID_EX[ID_EX_Rd];
+			FLAG                     <= flags;
+
+			DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
+			DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
+			REG_MEM_WB_Rd		 <= REG_EX_MEM_Rd;
 		end
-
-		DATA_ID_EX[ID_EX_OP1]    <= read_1;
-		DATA_ID_EX[ID_EX_OP2]    <= read_2;
-		DATA_ID_EX[ID_EX_PC]     <= DATA_IF_ID[IF_ID_PC];
-		REG_ID_EX[ID_EX_Rd]	 <= IF_ID_Rd;
-		REG_ID_EX[ID_EX_Rs]	 <= IF_ID_Rs;
-		REG_ID_EX[ID_EX_Rt]	 <= IF_ID_Rt;
-		OPCODE_ID_EX		 <= IF_ID_Opcode;
-		IMM_ID_EX		 <= IF_ID_Imm;
-
-		DATA_EX_MEM[EX_MEM_RSLT] <= result;
-		DATA_EX_MEM[EX_MEM_OP2]  <= op_2;
-		REG_EX_MEM_Rd		 <= REG_ID_EX[ID_EX_Rd];
-		FLAG                     <= flags;
-
-		DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
-		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
-		REG_MEM_WB_Rd		 <= REG_EX_MEM_Rd;
 	end
 end
 
