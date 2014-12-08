@@ -1,25 +1,24 @@
-module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, i_rdy, d_rdy, rd_data);
+module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, d_data, stall);
 
 input [15:0] i_addr, d_addr, wrt_data;
 input clk, rst_n, re, we;
 
 output [15:0] instr, rd_data;
-output i_rdy, d_rdy;
+output stall;
 
-wire rdy;
 wire		i_we,		d_we,		m_we,
-		i_re,		d_re, 		m_re,
+				 		m_re,
+						m_rdy,
 		i_hit, 		d_hit,
 		i_dirty_in,	d_dirty_in,
-		i_dirty_out,	d_dirty_out,
-						m_rdy;
+		i_dirty_out,	d_dirty_out;
 
 wire [7:0] 	i_tag,		d_tag;
 
 wire [13:0] 					m_addr;	
 
 wire [63:0] 	i_out,		d_out,		m_out, 
-	    	i_in,		d_in,		m_in;
+	    	i_in,		d_in;
 
 cache Icache(
 	.clk(clk),
@@ -28,7 +27,7 @@ cache Icache(
 	.wr_data(i_in),
 	.wdirty(i_dirty_in),
 	.we(i_we),
-	.re(i_re),
+	.re(i_fetch),
 
 	.rd_data(i_out),
 	.tag_out(i_tag),
@@ -43,7 +42,7 @@ cache Dcache(
 	.wr_data(d_in),
 	.wdirty(d_dirty_in),
 	.we(d_we),
-	.re(d_re),
+	.re(re | we),
 
 	.rd_data(d_out),
 	.tag_out(d_tag),
@@ -69,19 +68,16 @@ cache_control cacheControl(
 	.d_out(d_out), 
 	.m_out(m_out),
 
-	.i_re(i_re),
-	.d_re(d_re),
 	.m_re(m_re),
 	.i_we(i_we),
 	.d_we(d_we),	
 	.m_we(m_we),
 	.i_dirty_in(i_dirty_in),
 	.d_dirty_in(d_dirty_in),
-	.rdy(rdy),
+	.stall(stall),
 	.m_addr(m_addr),
-	.i_data(i_in),	
+	.i_data(i_in),
 	.d_data(d_in),
-	.m_data(m_in),
 	.instr(instr),
 	.rd_data(rd_data)
 );
@@ -92,7 +88,7 @@ unified_mem main_memory(
 	.addr(m_addr),
 	.re(m_re),
 	.we(m_we),
-	.wdata(m_data),
+	.wdata(d_out),
 
 	.rd_data(m_out),
 	.rdy(m_rdy)
