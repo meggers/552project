@@ -8,8 +8,6 @@ hazard_detect.v
 forwarding_unit.v
 control.v
 alu.v
-data_mem.v
-instr_mem.v
 rf_pipelined.v
 cpu.v
 cpu_tb.v

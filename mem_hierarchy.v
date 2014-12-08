@@ -1,7 +1,7 @@
 module system_memory(clk, rst_n, i_fetch, re, we, wrt_data, i_addr, d_addr, instr, rd_data, stall);
 
 input [15:0] i_addr, d_addr, wrt_data;
-input clk, rst_n, re, we;
+input clk, rst_n, re, we, i_fetch;
 
 output [15:0] instr, rd_data;
 output stall;
@@ -63,7 +63,7 @@ cache_control cacheControl(
 	.d_tag(d_tag),
 	.i_addr(i_addr), 
 	.d_addr(d_addr), 
-	.wr_data(wrt_data),
+	.wrt_data(wrt_data),
 	.i_out(i_out),
 	.d_out(d_out), 
 	.m_out(m_out),

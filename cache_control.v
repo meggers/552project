@@ -1,5 +1,5 @@
 module cache_control(
-	clk, rst_n, re, we, i_fetch, wr_data, stall, instr, rd_data
+	clk, rst_n, re, we, i_fetch, wrt_data, stall, instr, rd_data,
 	i_hit, 		d_hit, 
 			d_dirty, 	m_rdy,
 			d_tag,
@@ -13,15 +13,16 @@ module cache_control(
 );
 
 //** I/O **//
-input clk, rst_n, re, wr, i_fetch, i_hit, d_hit, d_dirty, m_rdy;
+input clk, rst_n, re, we, i_fetch, i_hit, d_hit, d_dirty, m_rdy;
 input [7:0] d_tag;
 input [15:0] i_addr, d_addr, wrt_data;
 input [63:0] i_out, d_out, m_out;
 
-output m_re, i_we, d_we, m_we, i_dirty_in, d_dirty_in, stall;
-output [13:0] m_addr;
+output i_dirty_in;
+output reg m_re, i_we, d_we, m_we, d_dirty_in, stall;
 output [15:0] instr, rd_data;
-output [63:0] i_data, m_data;
+output reg [13:0] m_addr;
+output reg [63:0] i_data, d_data, m_data;
 
 //** PARAMETERS **//
 localparam CACHE_READ		= 2'b00;
@@ -43,17 +44,17 @@ assign i_dirty_in 	= DISABLE; // Will never set dirty
 
 assign instr = ~rst_n ? INSTRUCTION_START : (
 	i_addr[1] ? (
-		i_addr[0] ? i_out[63:48] : i_out[47:32];
+		i_addr[0] ? i_out[63:48] : i_out[47:32]
 	) : (
-		i_addr[0] ? i_out[31:16] : i_out[15:0];	
+		i_addr[0] ? i_out[31:16] : i_out[15:0]
 	)
 );
 
 assign rd_data = ~rst_n ? DATA_START : (
 	d_addr[1] ? (
-		d_addr[0] ? d_out[63:48] : d_out[47:32];
+		d_addr[0] ? d_out[63:48] : d_out[47:32]
 	) : (
-		d_addr[0] ? d_out[31:16] : d_out[15:0];	
+		d_addr[0] ? d_out[31:16] : d_out[15:0]
 	)		
 );
 
@@ -83,9 +84,9 @@ always @(*) begin
 
 	stall 		= ENABLE;
 
-	nextState 	= START;
+	nextState 	= CACHE_READ;
 
-	case (start)
+	case (state)
 		// Default State
 		// Checking for cache misses and handling as necessary
 		//
@@ -116,7 +117,7 @@ always @(*) begin
 			end else begin
 				// Write hit
 				if (we) begin
-					d_data		= shift_in(d_out, wr_data, d_addr[1:0]);
+					d_data		= shift_in(d_out, wrt_data, d_addr[1:0]);
 					d_dirty_in 	= ENABLE;
 					d_we 		= ENABLE;
 				end
@@ -135,7 +136,7 @@ always @(*) begin
 				// Dealing with data request
 				if ((re | we) & ~d_hit) begin
 					if (we) begin
-						d_data		= shift_in(m_out, wr_data, d_addr[1:0]);
+						d_data		= shift_in(m_out, wrt_data, d_addr[1:0]);
 						d_dirty_in 	= ENABLE;
 						d_we 		= ENABLE;	
 					end else begin
@@ -177,7 +178,7 @@ always @(*) begin
 			m_addr 	= {d_tag, d_addr[7:2]};
 			m_we 	= ENABLE;
 
-			nextState = mem_rdy ? READ_AFTER_WRITE : WRITE_BACK;
+			nextState = m_rdy ? READ_AFTER_WRITE : WRITE_BACK;
 		end
 
 		// Memory read after right back
@@ -192,8 +193,6 @@ always @(*) begin
 		default : begin end
 	endcase
 end
-
-endmodule
 
 function [63:0] shift_in;
 
@@ -211,3 +210,5 @@ begin
 end
 
 endfunction
+
+endmodule
