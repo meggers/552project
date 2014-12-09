@@ -294,7 +294,6 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_ID_EX[ID_EX_OP1]    <= DATA_ID_EX[ID_EX_OP1];
 		DATA_ID_EX[ID_EX_OP2]    <= DATA_ID_EX[ID_EX_OP2];
 		DATA_ID_EX[ID_EX_PC]     <= DATA_ID_EX[ID_EX_PC];
-		REG_ID_EX[ID_EX_Rd]	 <= REG_ID_EX[ID_EX_Rd];
 		REG_ID_EX[ID_EX_Rs]	 <= REG_ID_EX[ID_EX_Rs];
 		REG_ID_EX[ID_EX_Rt]	 <= REG_ID_EX[ID_EX_Rt];
 		OPCODE_ID_EX		 <= OPCODE_ID_EX;

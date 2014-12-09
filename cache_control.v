@@ -87,7 +87,7 @@ always @(*) begin
 			// If we were trying to read/write data and missed
 			if ((re | we) & ~d_hit) begin
 				// Write miss (Write Back Policy)
-				if (we & d_dirty) begin
+				if (d_dirty) begin
 					m_addr 	= {d_tag, d_addr[7:2]};
 					m_we 	= ENABLE;
 					

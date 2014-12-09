@@ -1,0 +1,68 @@
+[*]
+[*] GTKWave Analyzer v3.3.58 (w)1999-2014 BSI
+[*] Tue Dec  9 00:03:01 2014
+[*]
+[dumpfile] "/home/max/Git/552project/test.vcd"
+[dumpfile_mtime] "Mon Dec  8 22:33:05 2014"
+[dumpfile_size] 310916
+[savefile] "/home/max/Git/552project/traces.gtkw"
+[timestart] 4126
+[size] 1000 600
+[pos] 25 -57
+*-5.000000 4170 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] cpu_tb.
+[treeopen] cpu_tb.iCPU.
+[sst_width] 195
+[signals_width] 126
+[sst_expanded] 1
+[sst_vpaned_height] 163
+@28
+cpu_tb.iCPU.clk
+@22
+cpu_tb.iCPU.pc[15:0]
+cpu_tb.iCPU.instr[15:0]
+@28
+cpu_tb.iCPU.hlt
+@800028
+cpu_tb.iCPU.CTRL_MEM_WB[2:0]
+@28
+(0)cpu_tb.iCPU.CTRL_MEM_WB[2:0]
+(1)cpu_tb.iCPU.CTRL_MEM_WB[2:0]
+(2)cpu_tb.iCPU.CTRL_MEM_WB[2:0]
+cpu_tb.iCPU.mem_ready
+cpu_tb.iCPU.stall
+cpu_tb.iCPU.rst_n
+cpu_tb.iCPU.pc_write
+@22
+cpu_tb.iCPU.pc_branch[15:0]
+@28
+cpu_tb.iCPU.branch
+cpu_tb.iCPU.IF_ID_Cond[2:0]
+cpu_tb.iCPU.branch_logic.ctrl
+cpu_tb.iCPU.branch_logic.branch
+@800028
+cpu_tb.iCPU.branch_logic.condition[2:0]
+@28
+(0)cpu_tb.iCPU.branch_logic.condition[2:0]
+(1)cpu_tb.iCPU.branch_logic.condition[2:0]
+(2)cpu_tb.iCPU.branch_logic.condition[2:0]
+@800028
+cpu_tb.iCPU.branch_logic.flags[2:0]
+@28
+(0)cpu_tb.iCPU.branch_logic.flags[2:0]
+(1)cpu_tb.iCPU.branch_logic.flags[2:0]
+(2)cpu_tb.iCPU.branch_logic.flags[2:0]
+cpu_tb.iCPU.alu_inst.flag_reg[2:0]
+cpu_tb.iCPU.alu_inst.flags[2:0]
+cpu_tb.iCPU.alu_inst.sub_ov
+cpu_tb.iCPU.alu_inst.sub_zr
+@23
+cpu_tb.iCPU.alu_inst.sub_out[15:0]
+@28
+cpu_tb.iCPU.alu_inst.sub_neg
+@1001200
+-group_end
+-group_end
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0
