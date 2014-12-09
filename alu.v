@@ -30,8 +30,8 @@ always @ (*) begin
 end
 
 wire [15:0] add_out, sub_out;
-wire add_zr, add_ng, add_ov,
-     sub_zr, sub_ng, sub_ov;
+wire add_zr, add_neg, add_ov,
+     sub_zr, sub_neg, sub_ov;
 
 sub subv(
     .in1 (src0), 

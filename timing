@@ -1,0 +1,105 @@
+Information: Building the design 'rf'. (HDL-193)
+Warning: Cannot find the design 'rf' in the library 'WORK'. (LBR-1)
+Information: Building the design 'cache'. (HDL-193)
+Warning: Cannot find the design 'cache' in the library 'WORK'. (LBR-1)
+Information: Building the design 'unified_mem'. (HDL-193)
+Warning: Cannot find the design 'unified_mem' in the library 'WORK'. (LBR-1)
+Warning: Unable to resolve reference 'rf' in 'cpu'. (LINK-5)
+Warning: Unable to resolve reference 'cache' in 'system_memory'. (LINK-5)
+Warning: Unable to resolve reference 'unified_mem' in 'system_memory'. (LINK-5)
+Warning: Design 'cpu' has '3' unresolved references. For more detailed information, use the "link" command. (UID-341)
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : cpu
+Version: I-2013.12-SP5
+Date   : Tue Dec  9 11:29:11 2014
+****************************************
+
+Operating Conditions: NCCOM   Library: tcbn40lpbwptc
+Wire Load Model Mode: segmented
+
+  Startpoint: REG_MEM_WB_Rd_reg[3]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: pc_reg[0] (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  cache_control      ZeroWireload          tcbn40lpbwptc
+  cpu                ZeroWireload          tcbn40lpbwptc
+  system_memory      ZeroWireload          tcbn40lpbwptc
+  FU                 ZeroWireload          tcbn40lpbwptc
+  andv               ZeroWireload          tcbn40lpbwptc
+  sub_DW01_sub_1     ZeroWireload          tcbn40lpbwptc
+  adder_DW01_add_1   ZeroWireload          tcbn40lpbwptc
+  paddsb_DW01_add_3  ZeroWireload          tcbn40lpbwptc
+  sub                ZeroWireload          tcbn40lpbwptc
+  adder              ZeroWireload          tcbn40lpbwptc
+  paddsb             ZeroWireload          tcbn40lpbwptc
+  alu                ZeroWireload          tcbn40lpbwptc
+  norv               ZeroWireload          tcbn40lpbwptc
+  Branch             ZeroWireload          tcbn40lpbwptc
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  REG_MEM_WB_Rd_reg[3]/CP (DFCNQD1BWP)                    0.00       0.00 r
+  REG_MEM_WB_Rd_reg[3]/Q (DFCNQD1BWP)                     0.13       0.13 r
+  forward_unit/mem_wb_rd[3] (FU)                          0.00       0.13 r
+  forward_unit/U32/Z (XOR2D1BWP)                          0.08       0.21 f
+  forward_unit/U24/ZN (NR2XD1BWP)                         0.03       0.24 r
+  forward_unit/U23/ZN (ND4D2BWP)                          0.04       0.28 f
+  forward_unit/U25/ZN (NR2XD2BWP)                         0.04       0.32 r
+  forward_unit/forwardb[0] (FU)                           0.00       0.32 r
+  U345/ZN (XNR2D2BWP)                                     0.09       0.41 f
+  U377/Z (AO222D2BWP)                                     0.17       0.58 f
+  alu_inst/src1[8] (alu)                                  0.00       0.58 f
+  alu_inst/subv/in2[8] (sub)                              0.00       0.58 f
+  alu_inst/subv/sub_9/B[8] (sub_DW01_sub_1)               0.00       0.58 f
+  alu_inst/subv/sub_9/U60/ZN (ND2D2BWP)                   0.03       0.61 r
+  alu_inst/subv/sub_9/U61/ZN (INVD2BWP)                   0.01       0.63 f
+  alu_inst/subv/sub_9/U86/ZN (AOI31D2BWP)                 0.04       0.67 r
+  alu_inst/subv/sub_9/U142/ZN (AOI22D1BWP)                0.04       0.71 f
+  alu_inst/subv/sub_9/U168/ZN (AOI31D2BWP)                0.05       0.75 r
+  alu_inst/subv/sub_9/U169/ZN (INR2D2BWP)                 0.02       0.77 f
+  alu_inst/subv/sub_9/U120/ZN (XNR2D2BWP)                 0.08       0.85 r
+  alu_inst/subv/sub_9/DIFF[15] (sub_DW01_sub_1)           0.00       0.85 r
+  alu_inst/subv/U7/ZN (INVD2BWP)                          0.02       0.87 f
+  alu_inst/subv/U24/ZN (IND2D4BWP)                        0.01       0.89 r
+  alu_inst/subv/U21/ZN (IOA21D2BWP)                       0.02       0.90 f
+  alu_inst/subv/neg (sub)                                 0.00       0.90 f
+  alu_inst/U91/Z (AO222D4BWP)                             0.13       1.03 f
+  alu_inst/flags[2] (alu)                                 0.00       1.03 f
+  branch_logic/flags[2] (Branch)                          0.00       1.03 f
+  branch_logic/U3/ZN (CKND2BWP)                           0.02       1.05 r
+  branch_logic/U8/ZN (IOA21D2BWP)                         0.02       1.07 f
+  branch_logic/U15/ZN (AOI32D2BWP)                        0.05       1.12 r
+  branch_logic/U12/ZN (OAI211D2BWP)                       0.07       1.19 f
+  branch_logic/branch (Branch)                            0.00       1.19 f
+  U379/ZN (ND3D1BWP)                                      0.04       1.23 r
+  U330/ZN (INVD3BWP)                                      0.03       1.26 f
+  U504/ZN (AOI222D1BWP)                                   0.10       1.36 r
+  U505/ZN (OAI221D1BWP)                                   0.08       1.44 f
+  pc_reg[0]/D (DFCNQD1BWP)                                0.00       1.44 f
+  data arrival time                                                  1.44
+
+  clock clk (rise edge)                                   1.25       1.25
+  clock network delay (ideal)                             0.00       1.25
+  pc_reg[0]/CP (DFCNQD1BWP)                               0.00       1.25 r
+  library setup time                                     -0.02       1.23
+  data required time                                                 1.23
+  --------------------------------------------------------------------------
+  data required time                                                 1.23
+  data arrival time                                                 -1.44
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.20
+
+
+1
