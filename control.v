@@ -358,6 +358,7 @@ always@(*) begin
 			ctrl_signals[MemWrite] 	= NO_ASSERT;
 			ctrl_signals[MemRead] 	= NO_ASSERT;
 			ctrl_signals[Jal]	= NO_ASSERT;
+			ctrl_signals[JR]	= NO_ASSERT;
 			ctrl_signals[Branch] 	= NO_ASSERT;
 
 			read_signals[re0]	= NO_ASSERT;
@@ -371,8 +372,8 @@ always@(*) begin
 			imm = clear_imm;
 			end
 		default : begin
-			ctrl_signals = 0;
-			read_signals = 0;
+			ctrl_signals = 8'h00;
+			read_signals = 2'b00;
 
 			rd = 0;
 			rs = 0;
