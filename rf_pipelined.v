@@ -76,7 +76,8 @@ always @(clk,re1,p1_addr)
 /////////////////////////////////////
 always @(posedge hlt)
   for(indx=1; indx<16; indx = indx+1)
-    $display("R%1h = %h",indx,mem[indx]);
+    $display("R%h = %h",indx,mem[indx]);
+    //$display("R1%h = %h",indx,mem[indx]);
 	
 endmodule
   
