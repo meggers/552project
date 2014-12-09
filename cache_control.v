@@ -15,7 +15,7 @@ output i_dirty_in;
 output reg m_re, i_we, d_we, m_we, d_dirty_in, ready;
 output [15:0] instr, rd_data;
 output reg [13:0] m_addr;
-output reg [63:0] i_data, d_data;
+output reg [63:0] i_data, d_data, m_data;
 
 //** PARAMETERS **//
 localparam CACHE_READ		= 2'b00;
