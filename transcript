@@ -1,0 +1,23 @@
+# //  Questa Sim-64
+# //  Version 10.3 linux_x86_64 Jan  6 2014
+# //
+# //  Copyright 1991-2014 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION
+# //  WHICH IS THE PROPERTY OF MENTOR GRAPHICS CORPORATION OR ITS
+# //  LICENSORS AND IS SUBJECT TO LICENSE TERMS.
+# //
+vlog -reportprogress 300 -work work /userspace/j/jroy/!school/ece552/project/project/552project/cpu.v
+# ** Error: (vlog-19) Failed to access library 'work' at "work".
+# No such file or directory. (errno = ENOENT)
+vlog -reportprogress 300 -work 552project /userspace/j/jroy/!school/ece552/project/project/552project/cpu.v
+# ** Error: (vlog-19) Failed to access library '552project' at "552project".
+# No such file or directory. (errno = ENOENT)
+vlib work
+vlog -reportprogress 300 -work work /userspace/j/jroy/!school/ece552/project/project/552project/cpu.v
+# -- Compiling module cpu
+# -- Compiling module Branch
+# 
+# Top level modules:
+# 	cpu

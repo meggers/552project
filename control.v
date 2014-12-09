@@ -44,7 +44,7 @@ localparam re1      	= 1;
 localparam ASSERT 	= 1'b1;
 localparam NO_ASSERT	= 1'b0;
 
-always@(*) begin
+always @(*) begin
 	opcode = instr[15:12];
 	case (instr[15:12])
 		ADD : begin
