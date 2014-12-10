@@ -317,7 +317,7 @@ module Branch(ctrl, condition, flags, branch, clk);
 input [2:0] condition, flags;
 input ctrl, clk;
 output reg branch;
-reg [2:0] flags_d;
+//reg [2:0] flags_d;
 
 localparam NOT_EQUAL			= 3'b000;
 localparam EQUAL			= 3'b001;
@@ -336,27 +336,27 @@ localparam V = 1;	// Index for Overflow flag
 localparam N = 2;	// Index for Sign flag
 
 // Flip flop to meet timing constraints
-always @(posedge clk) begin
-	flags_d <= flags;
-end
+//always @(posedge clk) begin
+//	flags_d <= flags;
+//end
 
 always @(posedge clk) begin
 	if (ctrl) begin
 		case (condition)
 			NOT_EQUAL : 
-				branch = ~flags_d[Z] ? BRANCH : NO_BRANCH;
+				branch = ~flags[Z] ? BRANCH : NO_BRANCH;
 			EQUAL : 
-				branch = flags_d[Z] ? BRANCH : NO_BRANCH;
+				branch = flags[Z] ? BRANCH : NO_BRANCH;
 			GREATER_THAN : 
-				branch = ~(flags_d[Z] | flags_d[N]) ? BRANCH : NO_BRANCH;
+				branch = ~(flags[Z] | flags[N]) ? BRANCH : NO_BRANCH;
 			LESS_THAN : 
-				branch = flags_d[N] ? BRANCH : NO_BRANCH;
+				branch = flags[N] ? BRANCH : NO_BRANCH;
 			GREATER_THAN_OR_EQUAL : 
-				branch = (flags_d[Z] | ~flags_d[N]) ? BRANCH : NO_BRANCH;
+				branch = (flags[Z] | ~flags[N]) ? BRANCH : NO_BRANCH;
 			LESS_THAN_OR_EQUAL : 
-				branch = (flags_d[N] | flags_d[Z]) ? BRANCH : NO_BRANCH;
+				branch = (flags[N] | flags[Z]) ? BRANCH : NO_BRANCH;
 			OVERFLOW : 
-				branch = flags_d[V] ? BRANCH : NO_BRANCH;
+				branch = flags[V] ? BRANCH : NO_BRANCH;
 			UNCONDITIONAL : 
 				branch = BRANCH;
 			default : 

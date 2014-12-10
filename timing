@@ -17,7 +17,7 @@ Report : timing
         -max_paths 1
 Design : cpu
 Version: I-2013.12-SP5
-Date   : Tue Dec  9 12:25:44 2014
+Date   : Tue Dec  9 18:37:04 2014
 ****************************************
 
 Operating Conditions: NCCOM   Library: tcbn40lpbwptc
@@ -25,7 +25,8 @@ Wire Load Model Mode: segmented
 
   Startpoint: REG_MEM_WB_Rd_reg[1]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: pc_reg[14] (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: branch_logic/branch_reg
+            (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
 
@@ -36,10 +37,11 @@ Wire Load Model Mode: segmented
   cpu                ZeroWireload          tcbn40lpbwptc
   system_memory      ZeroWireload          tcbn40lpbwptc
   FU                 ZeroWireload          tcbn40lpbwptc
-  sub_DW01_sub_1     ZeroWireload          tcbn40lpbwptc
   adder_DW01_add_1   ZeroWireload          tcbn40lpbwptc
-  sub                ZeroWireload          tcbn40lpbwptc
+  sub_DW01_sub_1     ZeroWireload          tcbn40lpbwptc
+  shifter            ZeroWireload          tcbn40lpbwptc
   adder              ZeroWireload          tcbn40lpbwptc
+  sub                ZeroWireload          tcbn40lpbwptc
   alu                ZeroWireload          tcbn40lpbwptc
 
   Point                                                   Incr       Path
@@ -49,53 +51,54 @@ Wire Load Model Mode: segmented
   REG_MEM_WB_Rd_reg[1]/CP (DFCNQD1BWP)                    0.00       0.00 r
   REG_MEM_WB_Rd_reg[1]/Q (DFCNQD1BWP)                     0.13       0.13 r
   forward_unit/mem_wb_rd[1] (FU)                          0.00       0.13 r
-  forward_unit/U47/Z (XOR2D1BWP)                          0.08       0.21 f
-  forward_unit/U31/ZN (NR2XD1BWP)                         0.02       0.24 r
-  forward_unit/U30/ZN (ND4D2BWP)                          0.04       0.27 f
-  forward_unit/U42/ZN (NR2D2BWP)                          0.04       0.32 r
-  forward_unit/forwardb[0] (FU)                           0.00       0.32 r
-  U339/ZN (CKND2BWP)                                      0.02       0.34 f
-  U466/ZN (CKND1BWP)                                      0.02       0.35 r
-  U462/ZN (CKND2D2BWP)                                    0.02       0.38 f
-  U333/ZN (ND2D4BWP)                                      0.03       0.40 r
-  U453/ZN (CKND2D4BWP)                                    0.03       0.43 f
-  U484/Z (BUFFD4BWP)                                      0.04       0.47 f
-  U349/Z (OR2D4BWP)                                       0.05       0.52 f
-  U452/ZN (ND3D3BWP)                                      0.02       0.55 r
-  alu_inst/src1[5] (alu)                                  0.00       0.55 r
-  alu_inst/add/in2[5] (adder)                             0.00       0.55 r
-  alu_inst/add/add_8/B[5] (adder_DW01_add_1)              0.00       0.55 r
-  alu_inst/add/add_8/U94/ZN (CKND2D1BWP)                  0.02       0.57 f
-  alu_inst/add/add_8/U34/ZN (OAI21D1BWP)                  0.04       0.61 r
-  alu_inst/add/add_8/U45/ZN (ND2D1BWP)                    0.03       0.65 f
-  alu_inst/add/add_8/U181/ZN (ND2D2BWP)                   0.02       0.67 r
-  alu_inst/add/add_8/U25/ZN (CKND2BWP)                    0.02       0.69 f
-  alu_inst/add/add_8/U103/ZN (OAI31D2BWP)                 0.05       0.74 r
-  alu_inst/add/add_8/U47/ZN (AOI211XD1BWP)                0.05       0.78 f
-  alu_inst/add/add_8/U107/Z (CKXOR2D2BWP)                 0.07       0.85 r
-  alu_inst/add/add_8/SUM[15] (adder_DW01_add_1)           0.00       0.85 r
-  alu_inst/add/U15/ZN (IND3D2BWP)                         0.04       0.89 f
-  alu_inst/add/U10/Z (CKBD4BWP)                           0.05       0.93 f
-  alu_inst/add/U23/ZN (ND2D4BWP)                          0.03       0.96 r
-  alu_inst/add/U5/ZN (OAI21D0BWP)                         0.03       0.99 f
-  alu_inst/add/out[14] (adder)                            0.00       0.99 f
-  alu_inst/U179/ZN (AOI222D1BWP)                          0.07       1.05 r
-  alu_inst/U127/ZN (IND4D1BWP)                            0.07       1.13 f
-  alu_inst/result[14] (alu)                               0.00       1.13 f
-  U500/ZN (ND2D1BWP)                                      0.04       1.16 r
-  U335/Z (AN3D4BWP)                                       0.06       1.22 r
-  U334/ZN (IND3D2BWP)                                     0.02       1.24 f
-  pc_reg[14]/D (DFCNQD1BWP)                               0.00       1.24 f
-  data arrival time                                                  1.24
+  forward_unit/U22/ZN (CKND2BWP)                          0.02       0.15 f
+  forward_unit/U8/Z (XOR2D1BWP)                           0.08       0.23 r
+  forward_unit/U7/ZN (ND3D2BWP)                           0.04       0.27 f
+  forward_unit/U21/ZN (CKND2BWP)                          0.02       0.29 r
+  forward_unit/U20/ZN (CKND2D4BWP)                        0.02       0.31 f
+  forward_unit/U34/ZN (NR2XD2BWP)                         0.03       0.34 r
+  forward_unit/forwarda[0] (FU)                           0.00       0.34 r
+  U416/ZN (INVD3BWP)                                      0.02       0.36 f
+  U383/ZN (ND2D3BWP)                                      0.02       0.38 r
+  U419/ZN (CKND2D8BWP)                                    0.03       0.41 f
+  U613/ZN (OAI222D4BWP)                                   0.13       0.54 r
+  alu_inst/src0[5] (alu)                                  0.00       0.54 r
+  alu_inst/subv/in1[5] (sub)                              0.00       0.54 r
+  alu_inst/subv/sub_9/A[5] (sub_DW01_sub_1)               0.00       0.54 r
+  alu_inst/subv/sub_9/U52/ZN (CKND1BWP)                   0.02       0.55 f
+  alu_inst/subv/sub_9/U42/ZN (ND2D1BWP)                   0.03       0.59 r
+  alu_inst/subv/sub_9/U10/ZN (ND3D3BWP)                   0.04       0.63 f
+  alu_inst/subv/sub_9/U85/ZN (NR3D1BWP)                   0.05       0.68 r
+  alu_inst/subv/sub_9/U84/ZN (INR2D1BWP)                  0.03       0.71 f
+  alu_inst/subv/sub_9/U68/ZN (AOI31D2BWP)                 0.04       0.75 r
+  alu_inst/subv/sub_9/U45/ZN (NR2D3BWP)                   0.03       0.78 f
+  alu_inst/subv/sub_9/U74/ZN (CKND2BWP)                   0.02       0.79 r
+  alu_inst/subv/sub_9/U72/ZN (ND2D3BWP)                   0.02       0.81 f
+  alu_inst/subv/sub_9/U75/ZN (ND2D3BWP)                   0.02       0.84 r
+  alu_inst/subv/sub_9/DIFF[15] (sub_DW01_sub_1)           0.00       0.84 r
+  alu_inst/subv/U11/ZN (CKND3BWP)                         0.02       0.85 f
+  alu_inst/subv/U16/ZN (IND3D4BWP)                        0.02       0.87 r
+  alu_inst/subv/U9/Z (AN2D4BWP)                           0.05       0.92 r
+  alu_inst/subv/U10/ZN (CKND12BWP)                        0.02       0.94 f
+  alu_inst/subv/ov (sub)                                  0.00       0.94 f
+  alu_inst/U65/Z (AO222D1BWP)                             0.13       1.07 f
+  alu_inst/flags[1] (alu)                                 0.00       1.07 f
+  branch_logic/flags[1] (Branch)                          0.00       1.07 f
+  branch_logic/U3/ZN (AOI33D2BWP)                         0.05       1.11 r
+  branch_logic/U13/ZN (INVD2BWP)                          0.02       1.14 f
+  branch_logic/U7/ZN (NR2D2BWP)                           0.03       1.17 r
+  branch_logic/U6/ZN (OAI211D1BWP)                        0.05       1.21 f
+  branch_logic/branch_reg/CN (DFKCNQD1BWP)                0.00       1.21 f
+  data arrival time                                                  1.21
 
   clock clk (rise edge)                                   1.25       1.25
   clock network delay (ideal)                             0.00       1.25
-  pc_reg[14]/CP (DFCNQD1BWP)                              0.00       1.25 r
-  library setup time                                     -0.01       1.24
-  data required time                                                 1.24
+  branch_logic/branch_reg/CP (DFKCNQD1BWP)                0.00       1.25 r
+  library setup time                                     -0.04       1.21
+  data required time                                                 1.21
   --------------------------------------------------------------------------
-  data required time                                                 1.24
-  data arrival time                                                 -1.24
+  data required time                                                 1.21
+  data arrival time                                                 -1.21
   --------------------------------------------------------------------------
   slack (MET)                                                        0.00
 
